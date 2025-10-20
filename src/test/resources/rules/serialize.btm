@@ -1,0 +1,76 @@
+# Set default execution mode to compile
+COMPILE
+
+
+# ENTRY/EXIT rules for target stack
+
+RULE com.example.App.main@IN
+CLASS com.example.App
+METHOD main
+HELPER fr.vigil.VigilHelper
+AT ENTRY
+IF true
+DO enterTargetStack($CLASS, $METHOD, $*);
+ENDRULE
+
+RULE com.example.App.main@OUT
+CLASS com.example.App
+METHOD main
+HELPER fr.vigil.VigilHelper
+AT EXIT
+IF true
+DO exitTargetStack();
+ENDRULE
+
+
+# ENTRY/EXIT rules for target methods
+
+RULE com.example.App.beginChain@IN
+CLASS com.example.App
+METHOD beginChain
+HELPER fr.vigil.VigilHelper
+AT ENTRY
+IF inTarget()
+DO enterTargetMethod($CLASS, $METHOD, $*);
+ENDRULE
+
+RULE com.example.App.beginChain@OUT
+CLASS com.example.App
+METHOD beginChain
+HELPER fr.vigil.VigilHelper
+AT EXIT
+IF inTarget()
+DO exitTargetMethod();
+ENDRULE
+
+RULE com.example.App.midChain@IN
+CLASS com.example.App
+METHOD midChain
+HELPER fr.vigil.VigilHelper
+AT ENTRY
+IF inTarget()
+DO enterTargetMethod($CLASS, $METHOD, $*);
+ENDRULE
+
+RULE com.example.App.midChain@OUT
+CLASS com.example.App
+METHOD midChain
+HELPER fr.vigil.VigilHelper
+AT EXIT
+IF inTarget()
+DO exitTargetMethod();
+ENDRULE
+
+
+# ENTRY rule for last method of target stack
+# This rule terminates execution, it is never executed more than once, no use compiling it
+
+RULE com.example.App.endChain@IN
+CLASS com.example.App
+METHOD endChain
+HELPER fr.vigil.VigilHelper
+NOCOMPILE
+AT ENTRY
+IF inTarget()
+DO foundTargetStack($CLASS, $METHOD, $*);
+ENDRULE

@@ -1,0 +1,64 @@
+plugins {
+    id 'java'
+
+    id 'com.diffplug.spotless' version '6.13.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    bytemanAgent
+    bytemanHelper
+}
+
+spotless {
+  java {
+    googleJavaFormat()
+    target("src/**/*.java")
+  }
+}
+
+dependencies {
+    implementation 'org.jboss.byteman:byteman:4.0.25'
+    bytemanAgent 'org.jboss.byteman:byteman:4.0.25'
+    implementation 'com.thoughtworks.xstream:xstream:1.4.19'
+    bytemanHelper 'com.thoughtworks.xstream:xstream:1.4.19'
+    testImplementation 'junit:junit:4.13.2'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+// Build a fat helper JAR (helper classes + their deps)
+tasks.register('createHelperJar', Jar) {
+    dependsOn classes
+    archiveBaseName.set('vigil')
+    archiveVersion.set(project.version)
+
+    from(sourceSets.main.output)
+
+    from {
+        (configurations.bytemanHelper ?: files()).collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+// Copy the Byteman agent into build dir
+tasks.register('copyBytemanAgent', Copy) {
+    from configurations.bytemanAgent
+    into "$buildDir/byteman"
+}
+
+// ensure helper and byteman agent are prepared before tests run
+test {
+    dependsOn 'createHelperJar', 'copyBytemanAgent'
+    testLogging {
+        events "passed", "failed", "skipped", "standardOut", "standardError"
+    }
+}

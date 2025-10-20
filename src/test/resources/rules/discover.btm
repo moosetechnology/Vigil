@@ -1,0 +1,8 @@
+RULE com.example.App.endChain()
+CLASS com.example.App
+METHOD endChain()
+HELPER fr.vigil.VigilHelper
+AT ENTRY
+IF true
+DO discoverTargetStack();
+ENDRULE
