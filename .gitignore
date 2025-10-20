@@ -3,3 +3,16 @@
 
 # Ignore Gradle build output directory
 build
+
+# Ignore build artifacts
+/bin
+/target
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore Eclipse gradle files
+.classpath
+.project
+.settings/
