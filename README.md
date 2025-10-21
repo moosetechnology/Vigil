@@ -20,10 +20,15 @@ Run tests:
 
 ## Usage
 
-Add to JVM args:
-```
--javaagent:/path/to/byteman.jar=script:/path/to/rule.btm,boot:/path/to/byteman.jar:/path/to/helper.jar
-```
+Add to JVM args:  
+Generic version:  
+> -javaagent:/path/to/byteman.jar=script:/path/to/rule.btm,boot:/path/to/byteman.jar:/path/to/helper.jar
+
+Vigil version:  
+> -javaagent:**/path/to/Vigil/build/byteman/byteman-XXXX.jar**  
+> =script:**/path/to/Vigil/bin/test/rules/XXXX.btm**  
+> ,boot:**/path/to/Vigil/build/byteman/byteman-XXXX.jar**  
+> :**/path/to/Vigil/build/libs/vigil-XXXX.jar**  
 
 - byteman.jar is the Byteman agent JAR
 - script: points to one or more comma-separated rule files (.btm files)
