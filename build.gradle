@@ -21,8 +21,8 @@ spotless {
 }
 
 dependencies {
-    implementation 'org.jboss.byteman:byteman:4.0.25'
-    bytemanAgent 'org.jboss.byteman:byteman:4.0.25'
+    implementation 'org.jboss.byteman:byteman:3.0.20'
+    bytemanAgent 'org.jboss.byteman:byteman:3.0.20'
     implementation 'com.thoughtworks.xstream:xstream:1.4.19'
     bytemanHelper 'com.thoughtworks.xstream:xstream:1.4.19'
     testImplementation 'junit:junit:4.13.2'
