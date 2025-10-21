@@ -4,13 +4,14 @@ plugins {
     id 'com.diffplug.spotless' version '6.13.0'
 }
 
-repositories {
-    mavenCentral()
+ext {
+    bytemanVersion = '3.0.20'
+    xstreamVersion = '1.4.19'
+    junitVersion =   '4.13.2'
 }
 
-configurations {
-    bytemanAgent
-    bytemanHelper
+repositories {
+    mavenCentral()
 }
 
 spotless {
@@ -21,11 +22,9 @@ spotless {
 }
 
 dependencies {
-    implementation 'org.jboss.byteman:byteman:3.0.20'
-    bytemanAgent 'org.jboss.byteman:byteman:3.0.20'
-    implementation 'com.thoughtworks.xstream:xstream:1.4.19'
-    bytemanHelper 'com.thoughtworks.xstream:xstream:1.4.19'
-    testImplementation 'junit:junit:4.13.2'
+    implementation "org.jboss.byteman:byteman:$bytemanVersion"
+    implementation "com.thoughtworks.xstream:xstream:$xstreamVersion"
+    testImplementation "junit:junit:$junitVersion"
 }
 
 java {
@@ -36,29 +35,46 @@ java {
     }
 }
 
-// Build a fat helper JAR (helper classes + their deps)
-tasks.register('createHelperJar', Jar) {
+// Build an uber agent JAR (helper classes + their deps + byteman agent)
+tasks.register('createAgentJar', Jar) {
     dependsOn classes
-    archiveBaseName.set('vigil')
+    archiveBaseName.set('vigil-agent')
     archiveVersion.set(project.version)
+
+    manifest {
+        attributes(
+            'Premain-Class': 'fr.vigil.AgentMain',
+            'Can-Redefine-Classes': 'true',
+            'Can-Retransform-Classes': 'true',
+            'Boot-Class-Path': '', // left empty for runtime definition
+            'Implementation-Title': 'Byteman',
+            'Implementation-Version': '3.0.20'
+        )
+    }
 
     from(sourceSets.main.output)
 
     from {
-        (configurations.bytemanHelper ?: files()).collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { file ->
+            if (file.isDirectory()) {
+                file
+            } else {
+                zipTree(file).matching {
+                    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+                }
+            }
+        }
     }
 }
 
-// Copy the Byteman agent into build dir
-tasks.register('copyBytemanAgent', Copy) {
-    from configurations.bytemanAgent
-    into "$buildDir/byteman"
-}
-
-// ensure helper and byteman agent are prepared before tests run
 test {
-    dependsOn 'createHelperJar', 'copyBytemanAgent'
+    dependsOn createAgentJar
     testLogging {
         events "passed", "failed", "skipped", "standardOut", "standardError"
+        exceptionFormat "full"
     }
+}
+
+build {
+    dependsOn spotlessApply, createAgentJar
 }

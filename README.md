@@ -7,32 +7,20 @@ Automatic instrumentation for vulnerability analysis.
 
 Run in terminal:
 ```sh
-./gradlew clean :spotlessApply createHelperJar copyBytemanAgent
+./gradlew clean build
 ```
-- `createHelperJar` creates a fat JAR with dependencies found at ./build/libs/vigil-*version*.jar
-- `copyBytemanAgent` copies the Byteman agent JAR at ./build/byteman/byteman-*version*.jar
-
-Run tests:
-```sh
-./gradlew clean :spotlessApply test
-```
+This builds the agent JAR with dependencies found at `./build/libs/vigil-agent-*version*.jar`.
 
 
 ## Usage
 
-Add to JVM args:  
-Generic version:  
-> -javaagent:/path/to/byteman.jar=script:/path/to/rule.btm,boot:/path/to/byteman.jar:/path/to/helper.jar
+Add to JVM args:
+> -javaagent:***/path/to/vigil-agent.jar***=script:***/path/to/rule.btm***
+- `vigil-agent.jar` is the JAR built by this project
+- script points to one or more comma-separated rule files (.btm)
 
-Vigil version:  
-> -javaagent:**/path/to/Vigil/build/byteman/byteman-XXXX.jar**  
-> =script:**/path/to/Vigil/bin/test/rules/XXXX.btm**  
-> ,boot:**/path/to/Vigil/build/byteman/byteman-XXXX.jar**  
-> :**/path/to/Vigil/build/libs/vigil-XXXX.jar**  
-
-- byteman.jar is the Byteman agent JAR
-- script: points to one or more comma-separated rule files (.btm files)
-- boot: lets you include JAR(s) to be added to the bootstrap classpath (necessary for helper classes and their dependencies)
+Optionally define a file to output Vigil data:
+> -Dfr.vigil.output=***/path/to/output/file***
 
 
 ## Rule Definition

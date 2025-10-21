@@ -7,6 +7,10 @@ import com.thoughtworks.xstream.core.TreeMarshallingStrategy;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.CompactWriter;
 import com.thoughtworks.xstream.mapper.Mapper;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Stack;
@@ -23,10 +27,32 @@ public class VigilHelper extends Helper {
     super(rule);
   }
 
+  protected static String OUTPUT_FILE;
+
+  public static void setOutputFile(String path) {
+    OUTPUT_FILE = path;
+  }
+
+  protected void output(String data) {
+    if (OUTPUT_FILE == null) {
+      System.out.println(data);
+      return;
+    }
+
+    File file = new File(OUTPUT_FILE);
+    file.getParentFile().mkdirs(); // Ensure parent directory exists
+
+    try (Writer out = new BufferedWriter(new FileWriter(file))) {
+      out.write(data);
+    } catch (IOException e) {
+      debug(">>> Error writing output file: " + e.getMessage());
+    }
+  }
+
   // ===== Step 1: target stack discovery
 
   public void discoverTargetStack() {
-    traceStack(""); // Omit prefix
+    output(formatStack("")); // Omit prefix
     System.exit(0); // Terminate
   }
 
@@ -148,8 +174,7 @@ public class VigilHelper extends Helper {
    */
   public void foundTargetStack(String className, String signature, Object[] receiverAndArguments) {
     debug(">>> Found target stack");
-    System.out.println(
-        serializeStack(className, signature, receiverAndArguments)); // TODO: dump to file
+    output(serializeStack(className, signature, receiverAndArguments));
     System.exit(0); // Terminate
   }
 }

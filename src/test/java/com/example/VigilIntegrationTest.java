@@ -9,19 +9,13 @@ import org.junit.Test;
 
 public class VigilIntegrationTest {
 
-  private static final String BYTEMAN_VERSION = "4.0.25";
   private static final String VIGIL_VERSION = "1.0";
 
   private static String runToyAppWithRule(String ruleName) throws Exception {
     Path projectRoot = Paths.get("").toAbsolutePath();
-    // Find the byteman agent
-    Path agentJar = projectRoot.resolve("build/byteman/byteman-" + BYTEMAN_VERSION + ".jar");
-    if (!Files.exists(agentJar)) {
-      throw new FileNotFoundException("Byteman agent missing: " + agentJar);
-    }
 
     // Find the helper bundle created by createHelperJar
-    Path helperJar = projectRoot.resolve("build/libs/vigil-" + VIGIL_VERSION + ".jar");
+    Path helperJar = projectRoot.resolve("build/libs/vigil-agent-" + VIGIL_VERSION + ".jar");
     if (!Files.exists(helperJar)) {
       throw new FileNotFoundException("Helper bundle missing: " + helperJar);
     }
@@ -45,11 +39,8 @@ public class VigilIntegrationTest {
     // IMPORTANT: pass both byteman agent JAR and helper on boot: (and include agent jar in script=)
     String agentArg =
         String.format(
-            "-javaagent:%s=script:%s,boot:%s:%s",
-            agentJar.toAbsolutePath(),
-            rule.toAbsolutePath(),
-            agentJar.toAbsolutePath(),
-            helperJar.toAbsolutePath());
+            "-javaagent:%s=script:%s,boot:%s",
+            helperJar.toAbsolutePath(), rule.toAbsolutePath(), helperJar.toAbsolutePath());
     cmd.add(agentArg);
 
     cmd.add("-cp");
