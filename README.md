@@ -20,7 +20,7 @@ Add to JVM args:
 - script points to one or more comma-separated rule files (.btm)
 
 Optionally define a file to output Vigil data:
-> -Dfr.vigil.output=***/path/to/output/file***
+> -Dorg.moosetechnology.vigil.output=***/path/to/output/file***
 
 
 ## Rule Definition
@@ -63,9 +63,10 @@ Either add the rule clause `COMPILE`, or add to JVM args:
 ```
 
 
-### Debugging Rules
+### Debugging
 
-Add to JVM args:
+Add the following JVM args to help with debugging rule lifecycle and Vigil execution:
 ```
 -Dorg.jboss.byteman.verbose=true
+-Dorg.jboss.byteman.debug
 ```
