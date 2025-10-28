@@ -1,13 +1,13 @@
 plugins {
     id 'java'
 
-    id 'com.diffplug.spotless' version '6.13.0'
+    id 'com.diffplug.spotless' version '7.2.1'
 }
 
 ext {
     bytemanVersion = '3.0.20'
     xstreamVersion = '1.4.19'
-    junitVersion =   '4.13.2'
+    junitVersion = '4.13.2'
 }
 
 repositories {
@@ -17,7 +17,7 @@ repositories {
 spotless {
   java {
     googleJavaFormat()
-    target("src/**/*.java")
+    target('src/**/*.java')
   }
 }
 
@@ -43,10 +43,10 @@ tasks.register('createAgentJar', Jar) {
 
     manifest {
         attributes(
-            'Premain-Class': 'fr.vigil.AgentMain',
+            'Premain-Class': 'org.moosetechnology.vigil.AgentMain',
             'Can-Redefine-Classes': 'true',
             'Can-Retransform-Classes': 'true',
-            'Boot-Class-Path': '', // left empty for runtime definition
+            // Required for wrapped Byteman agent to work:
             'Implementation-Title': 'Byteman',
             'Implementation-Version': '3.0.20'
         )
@@ -67,11 +67,16 @@ tasks.register('createAgentJar', Jar) {
     }
 }
 
+// Disable the default jar, we only want the agent
+tasks.named('jar') {
+    enabled = false
+}
+
 test {
     dependsOn createAgentJar
     testLogging {
-        events "passed", "failed", "skipped", "standardOut", "standardError"
-        exceptionFormat "full"
+        events = [ 'passed', 'failed', 'skipped', 'standardOut', 'standardError' ]
+        exceptionFormat = 'full'
     }
 }
 

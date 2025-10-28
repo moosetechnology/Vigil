@@ -1,7 +1,7 @@
 RULE com.example.App.endChain()
 CLASS com.example.App
 METHOD endChain()
-HELPER fr.vigil.VigilHelper
+HELPER org.moosetechnology.vigil.VigilHelper
 AT ENTRY
 IF true
 DO discoverTargetStack();

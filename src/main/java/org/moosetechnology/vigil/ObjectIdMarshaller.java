@@ -1,4 +1,4 @@
-package fr.vigil;
+package org.moosetechnology.vigil;
 
 import com.thoughtworks.xstream.converters.ConverterLookup;
 import com.thoughtworks.xstream.core.ReferenceByIdMarshaller;
@@ -6,7 +6,6 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.Mapper;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ObjectIdMarshaller extends ReferenceByIdMarshaller {
 
@@ -15,15 +14,15 @@ public class ObjectIdMarshaller extends ReferenceByIdMarshaller {
     super(writer, converterLookup, mapper);
   }
 
-  protected static final Map<Object, Integer> ids = new WeakHashMap<>();
-  protected static final AtomicInteger counter = new AtomicInteger(1);
+  protected static final Map<Object, Long> objectIDs = new WeakHashMap<>();
+  protected static long counter = 1L;
 
-  protected static int getId(Object obj) {
-    if (obj == null) return 0;
-    Integer id = ids.get(obj);
+  protected static long getId(Object obj) {
+    if (obj == null) return 0L;
+    Long id = objectIDs.get(obj);
     if (id == null) {
-      id = counter.getAndIncrement();
-      ids.put(obj, id);
+      id = counter++;
+      objectIDs.put(obj, id);
     }
     return id;
   }
