@@ -18,9 +18,9 @@ BTMRuleGenerator >> discoverRuleFor: aString [
 	| rule |
 	rule := self ruleInitFor: aString.
 	^ rule
-		  btmAtEntry;
-		  btmIf: 'true';
-		  btmDo: 'discoverTargetStack();';
+		  atEntry;
+		  condition: 'true';
+		  action: 'discoverTargetStack();';
 		  yourself
 ]
 
@@ -39,9 +39,9 @@ BTMRuleGenerator >> ruleInitFor: aString [
 	method := splited last.
 
 	^ BTMRule new
-		  btmName: aString;
-		  btmClass: class;
-		  btmMethod: method;
-		  btmHelper: self helperName;
+		  name: aString;
+		  instrumentedClass: class;
+		  instrumentedMethod: method;
+		  helper: self helperName;
 		  yourself
 ]

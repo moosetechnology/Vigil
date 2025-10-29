@@ -17,142 +17,136 @@ Class {
 	#name : 'BTMRule',
 	#superclass : 'Object',
 	#instVars : [
-		'btmName',
-		'btmClass',
-		'btmMethod',
-		'btmHelper',
-		'btmAt',
-		'btmIf',
-		'btmDo'
+		'instrumentedClass',
+		'at',
+		'action',
+		'condition',
+		'instrumentedMethod',
+		'name',
+		'helper'
 	],
 	#category : 'Vigil-Core',
 	#package : 'Vigil-Core'
 }
 
 { #category : 'accessing' }
-BTMRule >> btmAt [
+BTMRule >> action [
 
-	^ btmAt
+	^ action
 ]
 
 { #category : 'accessing' }
-BTMRule >> btmAt: aString [ 
-	btmAt := aString
+BTMRule >> action: aString [ 
+	action := aString
 ]
 
 { #category : 'accessing' }
-BTMRule >> btmAtEntry [
+BTMRule >> at [
 
-	btmAt := 'ENTRY'
+	^ at
 ]
 
 { #category : 'accessing' }
-BTMRule >> btmClass [
+BTMRule >> at: aString [ 
+	at := aString
+]
+
+{ #category : 'accessing' }
+BTMRule >> atEntry [
+
+	at := 'ENTRY'
+]
+
+{ #category : 'accessing' }
+BTMRule >> condition [
+
+	^ condition
+]
+
+{ #category : 'accessing' }
+BTMRule >> condition: aString [ 
+	condition := aString
+]
+
+{ #category : 'accessing' }
+BTMRule >> helper [
+
+	^ helper
+]
+
+{ #category : 'accessing' }
+BTMRule >> helper: aString [ 
+	helper := aString
+]
+
+{ #category : 'accessing' }
+BTMRule >> instrumentedClass [
 	
-	^ btmClass
+	^ instrumentedClass
 ]
 
 { #category : 'accessing' }
-BTMRule >> btmClass: aString [ 
-	btmClass := aString
+BTMRule >> instrumentedClass: aString [ 
+	instrumentedClass := aString
 ]
 
 { #category : 'accessing' }
-BTMRule >> btmDo [
+BTMRule >> instrumentedMethod [
 
-	^ btmDo
+	^ instrumentedMethod
 ]
 
 { #category : 'accessing' }
-BTMRule >> btmDo: aString [ 
-	btmDo := aString
+BTMRule >> instrumentedMethod: aString [ 
+	instrumentedMethod := aString
 ]
 
 { #category : 'accessing' }
-BTMRule >> btmDoLine [
-	btmDo ifNil: [ Error signal: 'btm do not defined' ].
-	^ 'DO ', btmDo
+BTMRule >> name [
+
+	^ name
 ]
 
 { #category : 'accessing' }
-BTMRule >> btmHelper [
-
-	^ btmHelper
+BTMRule >> name: aString [ 
+	name := aString
 ]
 
 { #category : 'accessing' }
-BTMRule >> btmHelper: aString [ 
-	btmHelper := aString
-]
+BTMRule >> writeActionOn: aStream [
 
-{ #category : 'accessing' }
-BTMRule >> btmIf [
-
-	^ btmIf
-]
-
-{ #category : 'accessing' }
-BTMRule >> btmIf: aString [ 
-	btmIf := aString
-]
-
-{ #category : 'accessing' }
-BTMRule >> btmMethod [
-
-	^ btmMethod
-]
-
-{ #category : 'accessing' }
-BTMRule >> btmMethod: aString [ 
-	btmMethod := aString
-]
-
-{ #category : 'accessing' }
-BTMRule >> btmName [
-
-	^ btmName
-]
-
-{ #category : 'accessing' }
-BTMRule >> btmName: aString [ 
-	btmName := aString
-]
-
-{ #category : 'accessing' }
-BTMRule >> writeBtmAtOn: aStream [
-
-	btmAt ifNil: [ Error signal: 'btm at not defined' ].
-	^ aStream
-		  nextPutAll: 'AT ';
-		  nextPutAll: btmAt;
-		  cr;
-		  yourself
-]
-
-{ #category : 'accessing' }
-BTMRule >> writeBtmClassOn: aStream [
-
-	btmClass ifNil: [ Error signal: 'btm class not defined' ].
-	^ aStream
-		  nextPutAll: 'CLASS ';
-		  nextPutAll: btmClass;
-		  cr;
-		  yourself
-]
-
-{ #category : 'accessing' }
-BTMRule >> writeBtmDoOn: aStream [
-
-	btmDo ifNil: [ Error signal: 'btm do not defined' ].
+	action ifNil: [ Error signal: 'btm do not defined' ].
 	^ aStream
 		  nextPutAll: 'DO ';
-		  nextPutAll: btmDo;
+		  nextPutAll: action;
 		  cr;
 		  yourself
 ]
 
 { #category : 'accessing' }
-BTMRule >> writeBtmEndruleOn:aStream [
+BTMRule >> writeAtOn: aStream [
+
+	at ifNil: [ Error signal: 'btm at not defined' ].
+	^ aStream
+		  nextPutAll: 'AT ';
+		  nextPutAll: at;
+		  cr;
+		  yourself
+]
+
+{ #category : 'accessing' }
+BTMRule >> writeConditionOn: aStream [
+
+	condition ifNil: [ Error signal: 'btm if not defined' ].
+	^ aStream
+		  nextPutAll: 'IF ';
+		  nextPutAll: condition;
+		  cr;
+		  yourself
+]
+
+{ #category : 'accessing' }
+BTMRule >> writeEndruleOn:aStream [
 
 	^ aStream
 		  nextPutAll: 'ENDRULE';
@@ -160,45 +154,45 @@ BTMRule >> writeBtmEndruleOn:aStream [
 ]
 
 { #category : 'accessing' }
-BTMRule >> writeBtmHelperOn: aStream [
+BTMRule >> writeHelperOn: aStream [
 
-	btmHelper ifNil: [ Error signal: 'btm helper not defined' ].
+	helper ifNil: [ Error signal: 'btm helper not defined' ].
 	^ aStream
 		  nextPutAll: 'HELPER ';
-		  nextPutAll: btmHelper;
+		  nextPutAll: helper;
 		  cr;
 		  yourself
 ]
 
 { #category : 'accessing' }
-BTMRule >> writeBtmIfOn: aStream [
+BTMRule >> writeInstumentedClassOn: aStream [
 
-	btmIf ifNil: [ Error signal: 'btm if not defined' ].
+	instrumentedClass ifNil: [ Error signal: 'btm class not defined' ].
 	^ aStream
-		  nextPutAll: 'IF ';
-		  nextPutAll: btmIf;
+		  nextPutAll: 'CLASS ';
+		  nextPutAll: instrumentedClass;
 		  cr;
 		  yourself
 ]
 
 { #category : 'accessing' }
-BTMRule >> writeBtmMethodOn: aStream [
+BTMRule >> writeInstumentedMethodOn: aStream [
 
-	btmMethod ifNil: [ Error signal: 'btm method not defined' ].
+	instrumentedMethod ifNil: [ Error signal: 'btm method not defined' ].
 	^ aStream
 		  nextPutAll: 'METHOD ';
-		  nextPutAll: btmMethod;
+		  nextPutAll: instrumentedMethod;
 		  cr;
 		  yourself
 ]
 
 { #category : 'accessing' }
-BTMRule >> writeBtmNameOn: aStream [
+BTMRule >> writeNameOn: aStream [
 
-	btmName ifNil: [ Error signal: 'btm name not defined' ].
+	name ifNil: [ Error signal: 'btm name not defined' ].
 	^ aStream
 		  nextPutAll: 'RULE ';
-		  nextPutAll: btmName;
+		  nextPutAll: name;
 		  cr;
 		  yourself
 ]
@@ -207,12 +201,12 @@ BTMRule >> writeBtmNameOn: aStream [
 BTMRule >> writeOn: aStream [
 
 	self
-		writeBtmNameOn: aStream;
-		writeBtmClassOn: aStream;
-		writeBtmMethodOn: aStream;
-		writeBtmHelperOn: aStream;
-		writeBtmAtOn: aStream;
-		writeBtmIfOn: aStream;
-		writeBtmDoOn: aStream;
-		writeBtmEndruleOn: aStream
+		writeNameOn: aStream;
+		writeInstumentedClassOn: aStream;
+		writeInstumentedMethodOn: aStream;
+		writeHelperOn: aStream;
+		writeAtOn: aStream;
+		writeConditionOn: aStream;
+		writeActionOn: aStream;
+		writeEndruleOn: aStream
 ]

@@ -20,122 +20,122 @@ BTMRuleTest >> setUp [
 ]
 
 { #category : 'tests' }
-BTMRuleTest >> testWriteBtmAtOn [
+BTMRuleTest >> testWriteActionOn [
 
 	| stream |
 	stream := WriteStream with: ''.
-	rule btmAt: 'test'.
+	rule action: 'test'.
 
-	self assert: ((rule writeBtmAtOn: stream) contents copyUpTo: Character space) equals: 'AT'
+	self assert: ((rule writeActionOn: stream) contents copyUpTo: Character space) equals: 'DO'
 ]
 
 { #category : 'tests' }
-BTMRuleTest >> testWriteBtmClassOn [
+BTMRuleTest >> testWriteActionOnRaiseErrorWhenNotDefined [
+
+	self should: [ rule writeActionOn: (WriteStream with: '') ] raise: Error
+]
+
+{ #category : 'tests' }
+BTMRuleTest >> testWriteAtOn [
 
 	| stream |
 	stream := WriteStream with: ''.
-	rule btmClass: 'test'.
+	rule at: 'test'.
 
-	self assert: ((rule writeBtmClassOn: stream) contents copyUpTo: Character space) equals: 'CLASS'
+	self assert: ((rule writeAtOn: stream) contents copyUpTo: Character space) equals: 'AT'
 ]
 
 { #category : 'tests' }
-BTMRuleTest >> testWriteBtmDoOn [
+BTMRuleTest >> testWriteAtOnRaiseErrorWhenNotDefined [
+
+	self should: [ rule writeAtOn: (WriteStream with: '') ] raise: Error
+]
+
+{ #category : 'tests' }
+BTMRuleTest >> testWriteConditionOn [
 
 	| stream |
 	stream := WriteStream with: ''.
-	rule btmDo: 'test'.
+	rule condition: 'test'.
 
-	self assert: ((rule writeBtmDoOn: stream) contents copyUpTo: Character space) equals: 'DO'
+	self assert: ((rule writeConditionOn: stream) contents copyUpTo: Character space) equals: 'IF'
 ]
 
 { #category : 'tests' }
-BTMRuleTest >> testWriteBtmEndruleOn [
+BTMRuleTest >> testWriteConditionOnRaiseErrorWhenNotDefined [
+
+	self should: [ rule writeConditionOn: (WriteStream with: '') ] raise: Error
+]
+
+{ #category : 'tests' }
+BTMRuleTest >> testWriteEndruleOn [
 
 	| stream |
 	stream := WriteStream with: ''.
 
-	self assert: ((rule writeBtmEndruleOn: stream) contents copyUpTo: Character space) equals: 'ENDRULE'
+	self assert: ((rule writeEndruleOn: stream) contents copyUpTo: Character space) equals: 'ENDRULE'
 ]
 
 { #category : 'tests' }
-BTMRuleTest >> testWriteBtmHelperOn [
+BTMRuleTest >> testWriteHelperOn [
 
 	| stream |
 	stream := WriteStream with: ''.
-	rule btmHelper: 'test'.
+	rule helper: 'test'.
 
-	self assert: ((rule writeBtmHelperOn: stream) contents copyUpTo: Character space) equals: 'HELPER'
+	self assert: ((rule writeHelperOn: stream) contents copyUpTo: Character space) equals: 'HELPER'
 ]
 
 { #category : 'tests' }
-BTMRuleTest >> testWriteBtmIfOn [
+BTMRuleTest >> testWriteHelperOnRaiseErrorWhenNotDefined [
+
+	self should: [ rule writeHelperOn: (WriteStream with: '') ] raise: Error
+]
+
+{ #category : 'tests' }
+BTMRuleTest >> testWriteInstrumentedClassOn [
 
 	| stream |
 	stream := WriteStream with: ''.
-	rule btmIf: 'test'.
+	rule instrumentedClass: 'test'.
 
-	self assert: ((rule writeBtmIfOn: stream) contents copyUpTo: Character space) equals: 'IF'
+	self assert: ((rule writeInstumentedClassOn: stream) contents copyUpTo: Character space) equals: 'CLASS'
 ]
 
 { #category : 'tests' }
-BTMRuleTest >> testWriteBtmMethodOn [
+BTMRuleTest >> testWriteInstrumentedClassOnRaiseErrorWhenNotDefined [
+
+	self should: [ rule writeInstumentedClassOn: (WriteStream with: '') ] raise: Error
+]
+
+{ #category : 'tests' }
+BTMRuleTest >> testWriteInstumentedMethodOn [
 
 	| stream |
 	stream := WriteStream with: ''.
-	rule btmMethod: 'test'.
+	rule instrumentedMethod: 'test'.
 
-	self assert: ((rule writeBtmMethodOn: stream) contents copyUpTo: Character space) equals: 'METHOD'
+	self assert: ((rule writeInstumentedMethodOn: stream) contents copyUpTo: Character space) equals: 'METHOD'
 ]
 
 { #category : 'tests' }
-BTMRuleTest >> testWriteBtmNameOn [
+BTMRuleTest >> testWriteMethodOnRaiseErrorWhenNotDefined [
+
+	self should: [ rule writeInstumentedMethodOn: (WriteStream with: '') ] raise: Error
+]
+
+{ #category : 'tests' }
+BTMRuleTest >> testWriteNameOn [
 
 	| stream |
 	stream := WriteStream with: ''.
-	rule btmName: 'test'.
+	rule name: 'test'.
 
-	self assert: ((rule writeBtmNameOn: stream) contents copyUpTo: Character space) equals: 'RULE'
+	self assert: ((rule writeNameOn: stream) contents copyUpTo: Character space) equals: 'RULE'
 ]
 
 { #category : 'tests' }
-BTMRuleTest >> testwriteBtmAtOnRaiseErrorWhenNotDefined [
+BTMRuleTest >> testWriteNameOnRaiseErrorWhenNotDefined [
 
-	self should: [ rule writeBtmAtOn: (WriteStream with: '') ] raise: Error
-]
-
-{ #category : 'tests' }
-BTMRuleTest >> testwriteBtmClassOnRaiseErrorWhenNotDefined [
-
-	self should: [ rule writeBtmClassOn: (WriteStream with: '') ] raise: Error
-]
-
-{ #category : 'tests' }
-BTMRuleTest >> testwriteBtmDoOnRaiseErrorWhenNotDefined [
-
-	self should: [ rule writeBtmDoOn: (WriteStream with: '') ] raise: Error
-]
-
-{ #category : 'tests' }
-BTMRuleTest >> testwriteBtmHelperOnRaiseErrorWhenNotDefined [
-
-	self should: [ rule writeBtmHelperOn: (WriteStream with: '') ] raise: Error
-]
-
-{ #category : 'tests' }
-BTMRuleTest >> testwriteBtmIfOnRaiseErrorWhenNotDefined [
-
-	self should: [ rule writeBtmIfOn: (WriteStream with: '') ] raise: Error
-]
-
-{ #category : 'tests' }
-BTMRuleTest >> testwriteBtmMethodOnRaiseErrorWhenNotDefined [
-
-	self should: [ rule writeBtmMethodOn: (WriteStream with: '') ] raise: Error
-]
-
-{ #category : 'tests' }
-BTMRuleTest >> testwriteBtmNameOnRaiseErrorWhenNotDefined [
-
-	self should: [ rule writeBtmNameOn: (WriteStream with: '') ] raise: Error
+	self should: [ rule writeNameOn: (WriteStream with: '') ] raise: Error
 ]

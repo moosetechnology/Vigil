@@ -24,9 +24,9 @@ BTMRuleGeneratorTest >> testGenerateDiscoverRule [
 	| rule |
 	rule := generator discoverRuleFor: 'com.example.App.endChain'.
 
-	self assert: rule btmAt equals: 'ENTRY'.
-	self assert: rule btmIf equals: 'true'.
-	self assert: rule btmDo equals: 'discoverTargetStack();'
+	self assert: rule at equals: 'ENTRY'.
+	self assert: rule condition equals: 'true'.
+	self assert: rule action equals: 'discoverTargetStack();'
 ]
 
 { #category : 'tests' }
@@ -35,10 +35,10 @@ BTMRuleGeneratorTest >> testRuleInitFor [
 	| rule |
 	rule := generator ruleInitFor: 'com.example.App.endChain'.
 
-	self assert: rule btmName equals: 'com.example.App.endChain'.
-	self assert: rule btmClass equals: 'com.example.App'.
-	self assert: rule btmMethod equals: 'endChain'.
+	self assert: rule name equals: 'com.example.App.endChain'.
+	self assert: rule instrumentedClass equals: 'com.example.App'.
+	self assert: rule instrumentedMethod equals: 'endChain'.
 	self
-		assert: rule btmHelper
+		assert: rule helper
 		equals: 'org.moosetechnology.vigil.VigilHelper'
 ]
