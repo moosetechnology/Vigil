@@ -11,7 +11,8 @@ Class {
 		'jdkDirectory',
 		'appFullName',
 		'ruleGenerator',
-		'endChainMethod'
+		'endChainMethod',
+		'buildPath'
 	],
 	#category : 'Vigil-Core',
 	#package : 'Vigil-Core'
@@ -28,10 +29,14 @@ Vigil >> appFullName: aString [
 ]
 
 { #category : 'as yet unclassified' }
+Vigil >> buildPath: aString [ 
+	buildPath := aString
+]
+
+{ #category : 'as yet unclassified' }
 Vigil >> classpathOption [
 
-	^ '-classpath "' , appDirectory , '/java/build/classes/java/test" '
-, appFullName
+	^ '-classpath "' , appDirectory , buildPath , '" ' , appFullName
 ]
 
 { #category : 'compiling' }

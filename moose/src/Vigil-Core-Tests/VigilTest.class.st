@@ -25,6 +25,7 @@ VigilTest >> testDiscoverApplication [
 		appFullName: 'com.example.App';
 		endChainMethod: 'endChain';
 		appDirectory: vigil vigilDirectory;
+		buildPath: '/java/build/classes/java/test';
 		jdkDirectory: 'java'.
 
 	vigil compileAgent.
