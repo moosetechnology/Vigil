@@ -115,7 +115,7 @@ BTMRule >> name: aString [
 { #category : 'accessing' }
 BTMRule >> writeActionOn: aStream [
 
-	action ifNil: [ Error signal: 'btm do not defined' ].
+	action ifNil: [ Error signal: 'Action not defined' ].
 	^ aStream
 		  nextPutAll: 'DO ';
 		  nextPutAll: action;
@@ -126,7 +126,7 @@ BTMRule >> writeActionOn: aStream [
 { #category : 'accessing' }
 BTMRule >> writeAtOn: aStream [
 
-	at ifNil: [ Error signal: 'btm at not defined' ].
+	at ifNil: [ Error signal: 'At not defined' ].
 	^ aStream
 		  nextPutAll: 'AT ';
 		  nextPutAll: at;
@@ -137,7 +137,7 @@ BTMRule >> writeAtOn: aStream [
 { #category : 'accessing' }
 BTMRule >> writeConditionOn: aStream [
 
-	condition ifNil: [ Error signal: 'btm if not defined' ].
+	condition ifNil: [ Error signal: 'no condition defined' ].
 	^ aStream
 		  nextPutAll: 'IF ';
 		  nextPutAll: condition;
@@ -156,7 +156,7 @@ BTMRule >> writeEndruleOn:aStream [
 { #category : 'accessing' }
 BTMRule >> writeHelperOn: aStream [
 
-	helper ifNil: [ Error signal: 'btm helper not defined' ].
+	helper ifNil: [ Error signal: 'no helper defined' ].
 	^ aStream
 		  nextPutAll: 'HELPER ';
 		  nextPutAll: helper;
@@ -167,7 +167,7 @@ BTMRule >> writeHelperOn: aStream [
 { #category : 'accessing' }
 BTMRule >> writeInstumentedClassOn: aStream [
 
-	instrumentedClass ifNil: [ Error signal: 'btm class not defined' ].
+	instrumentedClass ifNil: [ Error signal: 'no instrumented class defined' ].
 	^ aStream
 		  nextPutAll: 'CLASS ';
 		  nextPutAll: instrumentedClass;
@@ -178,7 +178,7 @@ BTMRule >> writeInstumentedClassOn: aStream [
 { #category : 'accessing' }
 BTMRule >> writeInstumentedMethodOn: aStream [
 
-	instrumentedMethod ifNil: [ Error signal: 'btm method not defined' ].
+	instrumentedMethod ifNil: [ Error signal: 'no instrumented method defined' ].
 	^ aStream
 		  nextPutAll: 'METHOD ';
 		  nextPutAll: instrumentedMethod;
@@ -189,7 +189,7 @@ BTMRule >> writeInstumentedMethodOn: aStream [
 { #category : 'accessing' }
 BTMRule >> writeNameOn: aStream [
 
-	name ifNil: [ Error signal: 'btm name not defined' ].
+	name ifNil: [ Error signal: 'rule name not defined' ].
 	^ aStream
 		  nextPutAll: 'RULE ';
 		  nextPutAll: name;
