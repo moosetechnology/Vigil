@@ -113,5 +113,5 @@ Vigil >> vigilDirectory [
 { #category : 'compiling' }
 Vigil >> writeAll: aCollection in: aPathReference [
 
-	aPathReference asFileReference writeStreamDo: [ :stream | aCollection do: [ :rule | rule writeOn: stream ] ]
+	aPathReference asFileReference ensureCreateFile writeStreamDo: [ :stream | aCollection do: [ :rule | rule writeOn: stream ] ]
 ]

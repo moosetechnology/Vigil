@@ -47,12 +47,6 @@ BTMRule >> btmAtEntry [
 ]
 
 { #category : 'accessing' }
-BTMRule >> btmAtLine [
-	btmAt ifNil: [ Error signal: 'btm at not defined' ].
-	^ 'AT ', btmAt
-]
-
-{ #category : 'accessing' }
 BTMRule >> btmClass [
 	
 	^ btmClass
@@ -61,12 +55,6 @@ BTMRule >> btmClass [
 { #category : 'accessing' }
 BTMRule >> btmClass: aString [ 
 	btmClass := aString
-]
-
-{ #category : 'accessing' }
-BTMRule >> btmClassLine [
-	btmClass ifNil: [ Error signal: 'btm class not defined' ].
-	^ 'CLASS ', btmClass
 ]
 
 { #category : 'accessing' }
@@ -87,12 +75,6 @@ BTMRule >> btmDoLine [
 ]
 
 { #category : 'accessing' }
-BTMRule >> btmEndruleLine [
-
-	^ 'ENDRULE'
-]
-
-{ #category : 'accessing' }
 BTMRule >> btmHelper [
 
 	^ btmHelper
@@ -101,12 +83,6 @@ BTMRule >> btmHelper [
 { #category : 'accessing' }
 BTMRule >> btmHelper: aString [ 
 	btmHelper := aString
-]
-
-{ #category : 'accessing' }
-BTMRule >> btmHelperLine [
-	btmHelper ifNil: [ Error signal: 'btm Helper not defined' ].
-	^ 'HELPER ', btmHelper
 ]
 
 { #category : 'accessing' }
@@ -121,12 +97,6 @@ BTMRule >> btmIf: aString [
 ]
 
 { #category : 'accessing' }
-BTMRule >> btmIfLine [
-	btmIf ifNil: [ Error signal: 'btm if not defined' ].
-	^ 'IF ', btmIf
-]
-
-{ #category : 'accessing' }
 BTMRule >> btmMethod [
 
 	^ btmMethod
@@ -135,12 +105,6 @@ BTMRule >> btmMethod [
 { #category : 'accessing' }
 BTMRule >> btmMethod: aString [ 
 	btmMethod := aString
-]
-
-{ #category : 'accessing' }
-BTMRule >> btmMethodLine [
-	btmMethod ifNil: [ Error signal: 'btm method not defined' ].
-	^ 'METHOD ', btmMethod
 ]
 
 { #category : 'accessing' }
@@ -155,28 +119,100 @@ BTMRule >> btmName: aString [
 ]
 
 { #category : 'accessing' }
-BTMRule >> btmNameLine [
+BTMRule >> writeBtmAtOn: aStream [
+
+	btmAt ifNil: [ Error signal: 'btm at not defined' ].
+	^ aStream
+		  nextPutAll: 'AT ';
+		  nextPutAll: btmAt;
+		  cr;
+		  yourself
+]
+
+{ #category : 'accessing' }
+BTMRule >> writeBtmClassOn: aStream [
+
+	btmClass ifNil: [ Error signal: 'btm class not defined' ].
+	^ aStream
+		  nextPutAll: 'CLASS ';
+		  nextPutAll: btmClass;
+		  cr;
+		  yourself
+]
+
+{ #category : 'accessing' }
+BTMRule >> writeBtmDoOn: aStream [
+
+	btmDo ifNil: [ Error signal: 'btm do not defined' ].
+	^ aStream
+		  nextPutAll: 'DO ';
+		  nextPutAll: btmDo;
+		  cr;
+		  yourself
+]
+
+{ #category : 'accessing' }
+BTMRule >> writeBtmEndruleOn:aStream [
+
+	^ aStream
+		  nextPutAll: 'ENDRULE';
+		  yourself
+]
+
+{ #category : 'accessing' }
+BTMRule >> writeBtmHelperOn: aStream [
+
+	btmHelper ifNil: [ Error signal: 'btm helper not defined' ].
+	^ aStream
+		  nextPutAll: 'HELPER ';
+		  nextPutAll: btmHelper;
+		  cr;
+		  yourself
+]
+
+{ #category : 'accessing' }
+BTMRule >> writeBtmIfOn: aStream [
+
+	btmIf ifNil: [ Error signal: 'btm if not defined' ].
+	^ aStream
+		  nextPutAll: 'IF ';
+		  nextPutAll: btmIf;
+		  cr;
+		  yourself
+]
+
+{ #category : 'accessing' }
+BTMRule >> writeBtmMethodOn: aStream [
+
+	btmMethod ifNil: [ Error signal: 'btm method not defined' ].
+	^ aStream
+		  nextPutAll: 'METHOD ';
+		  nextPutAll: btmMethod;
+		  cr;
+		  yourself
+]
+
+{ #category : 'accessing' }
+BTMRule >> writeBtmNameOn: aStream [
+
 	btmName ifNil: [ Error signal: 'btm name not defined' ].
-	^ 'RULE ', btmName
+	^ aStream
+		  nextPutAll: 'RULE ';
+		  nextPutAll: btmName;
+		  cr;
+		  yourself
 ]
 
 { #category : 'writing' }
 BTMRule >> writeOn: aStream [
 
-	aStream
-		nextPutAll: self btmNameLine;
-		cr;
-		nextPutAll: self btmClassLine;
-		cr;
-		nextPutAll: self btmMethodLine;
-		cr;
-		nextPutAll: self btmHelperLine;
-		cr;
-		nextPutAll: self btmAtLine;
-		cr;
-		nextPutAll: self btmIfLine;
-		cr;
-		nextPutAll: self btmDoLine;
-		cr;
-		nextPutAll: self btmEndruleLine
+	self
+		writeBtmNameOn: aStream;
+		writeBtmClassOn: aStream;
+		writeBtmMethodOn: aStream;
+		writeBtmHelperOn: aStream;
+		writeBtmAtOn: aStream;
+		writeBtmIfOn: aStream;
+		writeBtmDoOn: aStream;
+		writeBtmEndruleOn: aStream
 ]
