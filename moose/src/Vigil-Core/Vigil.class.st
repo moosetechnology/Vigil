@@ -30,7 +30,7 @@ Vigil >> appFullName: aString [
 { #category : 'as yet unclassified' }
 Vigil >> classpathOption [
 
-	^ '-classpath ' , appDirectory , '/java/bin:' , vigilDirectory , '/java/gradle/wrapper/gradle-wrapper.jar ' , appFullName
+	^ '-classpath "' , appDirectory , '/java/bin":"' , vigilDirectory , '/java/gradle/wrapper/gradle-wrapper.jar" ' , appFullName
 ]
 
 { #category : 'compiling' }
@@ -38,7 +38,7 @@ Vigil >> compileAgent [
 
 	| command |
 	"Going to the java directory"
-	command := 'cd ' , vigilDirectory , '/java'.
+	command := 'cd "' , vigilDirectory , '/java"'.
 	"Compiling the agent"
 	command := command , ';./gradlew clean build'.
 
@@ -90,7 +90,7 @@ Vigil >> initialize [
 { #category : 'compiling' }
 Vigil >> javaAgentOptionFor: aRule [
 
-	^ '-javaagent:' , vigilDirectory , '/java/build/libs/vigil-agent-1.0.jar=script:' , (self rulePathFor: aRule)
+	^ '-javaagent:"' , vigilDirectory , '/java/build/libs/vigil-agent-1.0.jar"=script:"' , (self rulePathFor: aRule), '"'
 ]
 
 { #category : 'as yet unclassified' }
