@@ -25,7 +25,7 @@ VigilTest >> testDiscoverApplication [
 		appFullName: 'com.example.App';
 		endChainMethod: 'endChain';
 		appDirectory: vigil vigilDirectory;
-		jdkDirectory: '/Library/Java/JavaVirtualMachines/jdk-24.jdk/Contents/Home/bin/java'.
+		jdkDirectory: 'java'.
 
 	vigil compileAgent.
 	self assert: vigil discorverApplication equals: 'com.example.App.endChain

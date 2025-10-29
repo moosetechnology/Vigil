@@ -30,7 +30,8 @@ Vigil >> appFullName: aString [
 { #category : 'as yet unclassified' }
 Vigil >> classpathOption [
 
-	^ '-classpath "' , appDirectory , '/java/bin":"' , vigilDirectory , '/java/gradle/wrapper/gradle-wrapper.jar" ' , appFullName
+	^ '-classpath "' , appDirectory , '/java/build/classes/java/test" '
+, appFullName
 ]
 
 { #category : 'compiling' }
@@ -72,7 +73,7 @@ Vigil >> executeApplicationDiscoveryWith: aPath [
 	command := command , ' ' , (self javaAgentOptionFor: aPath).
 	"Setting the classpath"
 	command := command , ' ' , self classpathOption.
-	
+	1halt.
 	^ LibC resultOfCommand: command
 ]
 
