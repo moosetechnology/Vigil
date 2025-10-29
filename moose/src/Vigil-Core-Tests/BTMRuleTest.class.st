@@ -23,9 +23,7 @@ BTMRuleTest >> setUp [
 BTMRuleTest >> testBtmAtLinePrefix [
 
 	rule btmAt: 'test'.
-	self
-		assert: (rule btmAtLine splitOn: Character space) first
-		equals: 'AT'
+	self assert: (rule btmAtLine copyUpTo: Character space) equals: 'AT'
 ]
 
 { #category : 'tests' }
@@ -39,7 +37,7 @@ BTMRuleTest >> testBtmClassLinePrefix [
 
 	rule btmClass: 'test'.
 	self
-		assert: (rule btmClassLine splitOn: Character space) first
+		assert: (rule btmClassLine copyUpTo: Character space) 
 		equals: 'CLASS'
 ]
 
@@ -54,7 +52,7 @@ BTMRuleTest >> testBtmDoLinePrefix [
 
 	rule btmDo: 'test'.
 	self
-		assert: (rule btmDoLine splitOn: Character space) first
+		assert: (rule btmDoLine copyUpTo: Character space) 
 		equals: 'DO'
 ]
 
@@ -77,7 +75,7 @@ BTMRuleTest >> testBtmHelperLinePrefix [
 
 	rule btmHelper: 'test'.
 	self
-		assert: (rule btmHelperLine splitOn: Character space) first
+		assert: (rule btmHelperLine copyUpTo: Character space) 
 		equals: 'HELPER'
 ]
 
@@ -92,7 +90,7 @@ BTMRuleTest >> testBtmIfLinePrefix [
 
 	rule btmIf: 'test'.
 	self
-		assert: (rule btmIfLine splitOn: Character space) first
+		assert: (rule btmIfLine copyUpTo: Character space) 
 		equals: 'IF'
 ]
 
@@ -107,7 +105,7 @@ BTMRuleTest >> testBtmMethodLinePrefix [
 
 	rule btmMethod: 'test'.
 	self
-		assert: (rule btmMethodLine splitOn: Character space) first
+		assert: (rule btmMethodLine copyUpTo: Character space) 
 		equals: 'METHOD'
 ]
 
@@ -122,7 +120,7 @@ BTMRuleTest >> testBtmNameLinePrefix [
 
 	rule btmName: 'test'.
 	self
-		assert: (rule btmNameLine splitOn: Character space) first
+		assert: (rule btmNameLine copyUpTo: Character space) 
 		equals: 'RULE'
 ]
 
