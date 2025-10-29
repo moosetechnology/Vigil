@@ -48,12 +48,13 @@ Vigil >> compileAgent [
 { #category : 'compiling' }
 Vigil >> discorverApplication [
 
-	| rule |
+	| rule rulePath|
 	rule := ruleGenerator discoverRuleFor: (appFullName , '.' , endChainMethod).
 	"Making sure the file is empty by deleting it"
-	self writeAll: { rule } in: (self rulePathFor: rule).
+	rulePath := self rulePathFor: rule.
+	self writeAll: { rule } in: rulePath.
 
-	^ self executeApplicationDiscoveryWith: rule
+	^ self executeApplicationDiscoveryWith: rulePath
 ]
 
 { #category : 'as yet unclassified' }
@@ -62,13 +63,13 @@ Vigil >> endChainMethod: aString [
 ]
 
 { #category : 'compiling' }
-Vigil >> executeApplicationDiscoveryWith: aRule [
+Vigil >> executeApplicationDiscoveryWith: aPath [
 
 	| command |
 	"Use the selected jdk"
 	command := jdkDirectory.
 	"Adding the agent"
-	command := command , ' ' , (self javaAgentOptionFor: aRule).
+	command := command , ' ' , (self javaAgentOptionFor: aPath).
 	"Setting the classpath"
 	command := command , ' ' , self classpathOption.
 	
@@ -88,9 +89,9 @@ Vigil >> initialize [
 ]
 
 { #category : 'compiling' }
-Vigil >> javaAgentOptionFor: aRule [
+Vigil >> javaAgentOptionFor: aPath [
 
-	^ '-javaagent:"' , vigilDirectory , '/java/build/libs/vigil-agent-1.0.jar"=script:"' , (self rulePathFor: aRule), '"'
+	^ '-javaagent:"' , vigilDirectory , '/java/build/libs/vigil-agent-1.0.jar"=script:"' , aPath pathString, '"'
 ]
 
 { #category : 'as yet unclassified' }
@@ -101,8 +102,7 @@ Vigil >> jdkDirectory: aString [
 { #category : 'compiling' }
 Vigil >> rulePathFor: aRule [
 
-	self flag: #todo. "Actually only one file is used for every rule and always override, maybe we could optimize it"
-	^ vigilDirectory , '/rules' , '/rule.btm'
+	^ FileReference newTempFilePrefix: 'rule' suffix: 'btm'
 ]
 
 { #category : 'as yet unclassified' }
