@@ -159,3 +159,24 @@ BTMRule >> btmNameLine [
 	btmName ifNil: [ Error signal: 'btm name not defined' ].
 	^ 'RULE ', btmName
 ]
+
+{ #category : 'writing' }
+BTMRule >> writeOn: aStream [
+
+	aStream
+		nextPutAll: self btmNameLine;
+		cr;
+		nextPutAll: self btmClassLine;
+		cr;
+		nextPutAll: self btmMethodLine;
+		cr;
+		nextPutAll: self btmHelperLine;
+		cr;
+		nextPutAll: self btmAtLine;
+		cr;
+		nextPutAll: self btmIfLine;
+		cr;
+		nextPutAll: self btmDoLine;
+		cr;
+		nextPutAll: self btmEndruleLine
+]
