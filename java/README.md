@@ -1,8 +1,3 @@
-# Vigil
-
-Automatic instrumentation for vulnerability analysis.
-
-
 ## Build
 
 Run in terminal:
