@@ -25,8 +25,29 @@ BTMRuleGeneratorTest >> testGenerateDiscoverRule [
 	rule := generator discoverRuleFor: 'com.example.App.endChain'.
 
 	self assert: rule at equals: 'ENTRY'.
-	self assert: rule condition equals: 'true'.
 	self assert: rule action equals: 'discoverTargetStack();'
+]
+
+{ #category : 'tests' }
+BTMRuleGeneratorTest >> testGenerateEnterStackEntryRule [
+
+	| rule |
+	rule := generator enterStackEntryRuleFor: 'com.example.App.main'.
+
+	self assert: rule name equals: 'com.example.App.main@IN'.
+	self assert: rule at equals: 'ENTRY'.
+	self assert: rule action equals: 'enterTargetStack($CLASS, $METHOD, $*);'
+]
+
+{ #category : 'tests' }
+BTMRuleGeneratorTest >> testGenerateExitStackEntryRule [
+
+	| rule |
+	rule := generator enterStackExitRuleFor: 'com.example.App.main'.
+
+	self assert: rule name equals: 'com.example.App.main@OUT'.
+	self assert: rule at equals: 'EXIT'.
+	self assert: rule action equals: 'exitTargetStack();'
 ]
 
 { #category : 'tests' }
@@ -38,7 +59,6 @@ BTMRuleGeneratorTest >> testRuleInitFor [
 	self assert: rule name equals: 'com.example.App.endChain'.
 	self assert: rule instrumentedClass equals: 'com.example.App'.
 	self assert: rule instrumentedMethod equals: 'endChain'.
-	self
-		assert: rule helper
-		equals: 'org.moosetechnology.vigil.VigilHelper'
+	self assert: rule helper equals: 'org.moosetechnology.vigil.VigilHelper'.
+	self assert: rule condition equals: 'true'
 ]

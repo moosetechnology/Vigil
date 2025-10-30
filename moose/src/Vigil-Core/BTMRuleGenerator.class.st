@@ -19,8 +19,30 @@ BTMRuleGenerator >> discoverRuleFor: aString [
 	rule := self ruleInitFor: aString.
 	^ rule
 		  atEntry;
-		  condition: 'true';
 		  action: 'discoverTargetStack();';
+		  yourself
+]
+
+{ #category : 'as yet unclassified' }
+BTMRuleGenerator >> enterStackEntryRuleFor: aString [
+
+	| rule |
+	rule := self ruleInitFor: aString.
+	^ rule
+		  name: rule name , '@IN';
+		  atEntry;
+		  action: 'enterTargetStack($CLASS, $METHOD, $*);'
+]
+
+{ #category : 'as yet unclassified' }
+BTMRuleGenerator >> enterStackExitRuleFor: aString [
+
+	| rule |
+	rule := self ruleInitFor: aString.
+	^ rule
+		  name: rule name , '@OUT';
+		  atExit;
+		  action: 'exitTargetStack();';
 		  yourself
 ]
 
@@ -43,5 +65,6 @@ BTMRuleGenerator >> ruleInitFor: aString [
 		  instrumentedClass: class;
 		  instrumentedMethod: method;
 		  helper: self helperName;
+		  condition: 'true';
 		  yourself
 ]

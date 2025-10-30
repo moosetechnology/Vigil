@@ -1,6 +1,16 @@
 "
 I'm the main class and entry point of Vigil.
 
+### Variables
+| Variable | description |
+|---|
+| `vigilDirectory` |  |
+| `appDirectory` | |
+| `jdkDirectory` |  |
+| `ruleGenerator` |  |
+| `endChainMethod` |  |
+| `buildPath` | |
+| `entryPoint` | |
 "
 Class {
 	#name : 'Vigil',

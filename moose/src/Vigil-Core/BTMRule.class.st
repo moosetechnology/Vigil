@@ -58,6 +58,11 @@ BTMRule >> atEntry [
 ]
 
 { #category : 'accessing' }
+BTMRule >> atExit [
+	self at: 'EXIT'
+]
+
+{ #category : 'accessing' }
 BTMRule >> condition [
 
 	^ condition
