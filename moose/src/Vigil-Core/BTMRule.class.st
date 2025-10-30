@@ -119,7 +119,7 @@ BTMRule >> writeActionOn: aStream [
 	^ aStream
 		  nextPutAll: 'DO ';
 		  nextPutAll: action;
-		  cr;
+		  crlf;
 		  yourself
 ]
 
@@ -130,7 +130,7 @@ BTMRule >> writeAtOn: aStream [
 	^ aStream
 		  nextPutAll: 'AT ';
 		  nextPutAll: at;
-		  cr;
+		  crlf;
 		  yourself
 ]
 
@@ -141,7 +141,7 @@ BTMRule >> writeConditionOn: aStream [
 	^ aStream
 		  nextPutAll: 'IF ';
 		  nextPutAll: condition;
-		  cr;
+		  crlf;
 		  yourself
 ]
 
@@ -150,7 +150,7 @@ BTMRule >> writeEndruleOn: aStream [
 
 	^ aStream
 		  nextPutAll: 'ENDRULE';
-		  cr;
+		  crlf;
 		  yourself
 ]
 
@@ -161,7 +161,7 @@ BTMRule >> writeHelperOn: aStream [
 	^ aStream
 		  nextPutAll: 'HELPER ';
 		  nextPutAll: helper;
-		  cr;
+		  crlf;
 		  yourself
 ]
 
@@ -172,7 +172,7 @@ BTMRule >> writeInstumentedClassOn: aStream [
 	^ aStream
 		  nextPutAll: 'CLASS ';
 		  nextPutAll: instrumentedClass;
-		  cr;
+		  crlf;
 		  yourself
 ]
 
@@ -183,7 +183,7 @@ BTMRule >> writeInstumentedMethodOn: aStream [
 	^ aStream
 		  nextPutAll: 'METHOD ';
 		  nextPutAll: instrumentedMethod;
-		  cr;
+		  crlf;
 		  yourself
 ]
 
@@ -194,25 +194,21 @@ BTMRule >> writeNameOn: aStream [
 	^ aStream
 		  nextPutAll: 'RULE ';
 		  nextPutAll: name;
-		  cr;
+		  crlf;
 		  yourself
 ]
 
 { #category : 'writing' }
 BTMRule >> writeOn: aStream [
 
-	| streamWithCRLF |
-	"Using a ZnNewLineWriterStream forCrLf to make the implementation more robust
-	It is extremely important to use it because the parser for Byteman's rules can't handle cr"
-	streamWithCRLF := ZnNewLineWriterStream on: aStream.
-	streamWithCRLF forCrLf.
+	"Every writeXyzOn: methods must use crlf so that the byteman parser can understand the rules"
 	self
-		writeNameOn: streamWithCRLF;
-		writeInstumentedClassOn: streamWithCRLF;
-		writeInstumentedMethodOn: streamWithCRLF;
-		writeHelperOn: streamWithCRLF;
-		writeAtOn: streamWithCRLF;
-		writeConditionOn: streamWithCRLF;
-		writeActionOn: streamWithCRLF;
-		writeEndruleOn: streamWithCRLF
+		writeNameOn: aStream;
+		writeInstumentedClassOn: aStream;
+		writeInstumentedMethodOn: aStream;
+		writeHelperOn: aStream;
+		writeAtOn: aStream;
+		writeConditionOn: aStream;
+		writeActionOn: aStream;
+		writeEndruleOn: aStream
 ]

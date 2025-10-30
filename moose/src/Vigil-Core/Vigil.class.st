@@ -9,10 +9,10 @@ Class {
 		'vigilDirectory',
 		'appDirectory',
 		'jdkDirectory',
-		'appFullName',
 		'ruleGenerator',
 		'endChainMethod',
-		'buildPath'
+		'buildPath',
+		'entryPoint'
 	],
 	#category : 'Vigil-Core',
 	#package : 'Vigil-Core'
@@ -24,11 +24,6 @@ Vigil >> appDirectory: aString [
 ]
 
 { #category : 'as yet unclassified' }
-Vigil >> appFullName: aString [ 
-	appFullName := aString
-]
-
-{ #category : 'as yet unclassified' }
 Vigil >> buildPath: aString [ 
 	buildPath := aString
 ]
@@ -36,7 +31,7 @@ Vigil >> buildPath: aString [
 { #category : 'as yet unclassified' }
 Vigil >> classpathOption [
 
-	^ '-classpath "' , appDirectory , buildPath , '" ' , appFullName
+	^ '-classpath "' , appDirectory , buildPath , '" ' , entryPoint
 ]
 
 { #category : 'compiling' }
@@ -55,7 +50,7 @@ Vigil >> compileAgent [
 Vigil >> discorverApplication [
 
 	| rule rulePath|
-	rule := ruleGenerator discoverRuleFor: (appFullName , '.' , endChainMethod).
+	rule := ruleGenerator discoverRuleFor: (entryPoint , '.' , endChainMethod).
 	"Making sure the file is empty by deleting it"
 	rulePath := self rulePathFor: rule.
 	self writeAll: { rule } in: rulePath.
@@ -66,6 +61,11 @@ Vigil >> discorverApplication [
 { #category : 'as yet unclassified' }
 Vigil >> endChainMethod: aString [ 
 	endChainMethod := aString
+]
+
+{ #category : 'as yet unclassified' }
+Vigil >> entryPoint: aString [ 
+	entryPoint := aString
 ]
 
 { #category : 'compiling' }

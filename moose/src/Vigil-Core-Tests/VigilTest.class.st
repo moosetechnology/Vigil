@@ -18,19 +18,40 @@ VigilTest >> testCompileAgentIsSuccessful [
 { #category : 'tests' }
 VigilTest >> testDiscoverApplication [
 
-	| vigil |
-	self flag: #todo. "here we just hard code the search of a jdk, we should find another solution"
+	| vigil result expected |
 	vigil := Vigil new.
 	vigil
-		appFullName: 'com.example.App';
+		entryPoint: 'com.example.App';
 		endChainMethod: 'endChain';
 		appDirectory: vigil vigilDirectory;
 		buildPath: '/java/build/classes/java/test';
 		jdkDirectory: 'java'.
 
 	vigil compileAgent.
-	self assert: vigil discorverApplication equals: 'com.example.App.endChain
-com.example.App.midChain
-com.example.App.beginChain
-com.example.App.main'
+	self flag: #todo. "find a way to not compile at every test"
+	result := vigil discorverApplication.
+
+	result := (result splitOn: String lf) reject: [ :line | line isEmpty ].
+	expected := OrderedCollection new
+		            add: 'com.example.App.endChain';
+		            add: 'com.example.App.midChain';
+		            add: 'com.example.App.beginChain';
+		            add: 'com.example.App.main';
+		            yourself.
+	self assertCollection: result hasSameElements: expected
+]
+
+{ #category : 'tests' }
+VigilTest >> testRuleWriteOnUseOnlyCrLf [
+
+	| rule stream contents |
+	stream := WriteStream on: ''.
+	rule := BTMRuleGenerator new discoverRuleFor: 'com.example.App.endChain'.
+	rule writeOn: stream.
+
+	"Making sure the new line are in the right format for byteman parser"
+	contents := stream contents splitOn: String crlf.
+	contents do: [ :line |
+			self assert: (line includesSubstring: String cr) not.
+			self assert: (line includesSubstring: String lf) not ]
 ]
