@@ -7,6 +7,11 @@ import com.thoughtworks.xstream.mapper.Mapper;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+/**
+ * Custom XStream marshaller that adds unique Object IDs (OID) to serialized objects. OIDs are
+ * distinct from IDs added by the {@link ReferenceByIdMarshaller} superclass. They allow tracking
+ * object identities across multiple serializations.
+ */
 public class ObjectIdMarshaller extends ReferenceByIdMarshaller {
 
   public ObjectIdMarshaller(
@@ -27,7 +32,7 @@ public class ObjectIdMarshaller extends ReferenceByIdMarshaller {
     return id;
   }
 
-  private boolean isSimple(Class<?> clazz) {
+  protected boolean isSimple(Class<?> clazz) {
     return clazz.isPrimitive()
         || clazz == String.class
         || clazz == Boolean.class

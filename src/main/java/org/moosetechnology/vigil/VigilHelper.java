@@ -126,7 +126,24 @@ public class VigilHelper extends Helper {
   protected static final XStream XSTREAM;
 
   static {
-    XSTREAM = new XStream();
+    XSTREAM =
+        new XStream() {
+
+          @Override
+          protected void setupAliases() {
+            alias("null", Mapper.Null.class);
+            // No aliases besides hiding XStream's own null representation.
+            // Aliases make the XML output less verbose, but also less self-descriptive.
+            // If there are aliases, they must be known by the parser.
+          }
+
+          @Override
+          protected void setupDefaultImplementations() {
+            // Keep empty to always include type information.
+            // By default, XStream omits type information for default implementations,
+            // such as ArrayList for List fields, which would prevent correct parsing later on.
+          }
+        };
 
     // Use custom marshalling context for Object ID injection
     XSTREAM.setMarshallingStrategy(
@@ -187,12 +204,13 @@ public class VigilHelper extends Helper {
 
       return writer.toString();
     } catch (Exception e) { // Submit an issue if this happens
-      return "Error serializing frame "
+      return "<Error serializing frame "
           + signature
           + ": "
           + e.getClass().getSimpleName()
           + " - "
-          + e.getMessage();
+          + e.getMessage()
+          + "/>";
     }
   }
 
