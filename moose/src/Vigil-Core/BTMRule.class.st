@@ -146,10 +146,11 @@ BTMRule >> writeConditionOn: aStream [
 ]
 
 { #category : 'accessing' }
-BTMRule >> writeEndruleOn:aStream [
+BTMRule >> writeEndruleOn: aStream [
 
 	^ aStream
 		  nextPutAll: 'ENDRULE';
+		  cr;
 		  yourself
 ]
 
@@ -200,13 +201,18 @@ BTMRule >> writeNameOn: aStream [
 { #category : 'writing' }
 BTMRule >> writeOn: aStream [
 
+	| streamWithCRLF |
+	"Using a ZnNewLineWriterStream forCrLf to make the implementation more robust
+	It is extremely important to use it because the parser for Byteman's rules can't handle cr"
+	streamWithCRLF := ZnNewLineWriterStream on: aStream.
+	streamWithCRLF forCrLf.
 	self
-		writeNameOn: aStream;
-		writeInstumentedClassOn: aStream;
-		writeInstumentedMethodOn: aStream;
-		writeHelperOn: aStream;
-		writeAtOn: aStream;
-		writeConditionOn: aStream;
-		writeActionOn: aStream;
-		writeEndruleOn: aStream
+		writeNameOn: streamWithCRLF;
+		writeInstumentedClassOn: streamWithCRLF;
+		writeInstumentedMethodOn: streamWithCRLF;
+		writeHelperOn: streamWithCRLF;
+		writeAtOn: streamWithCRLF;
+		writeConditionOn: streamWithCRLF;
+		writeActionOn: streamWithCRLF;
+		writeEndruleOn: streamWithCRLF
 ]

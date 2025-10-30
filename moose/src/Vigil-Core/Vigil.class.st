@@ -78,7 +78,7 @@ Vigil >> executeApplicationDiscoveryWith: aPath [
 	command := command , ' ' , (self javaAgentOptionFor: aPath).
 	"Setting the classpath"
 	command := command , ' ' , self classpathOption.
-	1halt.
+	
 	^ LibC resultOfCommand: command
 ]
 
