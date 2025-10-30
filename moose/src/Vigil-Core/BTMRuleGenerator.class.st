@@ -16,9 +16,8 @@ Class {
 BTMRuleGenerator >> discoverRuleFor: aString [
 
 	| rule |
-	rule := self ruleInitFor: aString.
+	rule := self ruleInitEntryFor: aString.
 	^ rule
-		  atEntry;
 		  action: 'discoverTargetStack();';
 		  yourself
 ]
@@ -27,21 +26,16 @@ BTMRuleGenerator >> discoverRuleFor: aString [
 BTMRuleGenerator >> enterStackEntryRuleFor: aString [
 
 	| rule |
-	rule := self ruleInitFor: aString.
-	^ rule
-		  name: rule name , '@IN';
-		  atEntry;
-		  action: 'enterTargetStack($CLASS, $METHOD, $*);'
+	rule := self ruleInitEntryFor: aString.
+	^ rule action: 'enterTargetStack($CLASS, $METHOD, $*);'
 ]
 
 { #category : 'as yet unclassified' }
 BTMRuleGenerator >> enterStackExitRuleFor: aString [
 
 	| rule |
-	rule := self ruleInitFor: aString.
+	rule := self ruleInitExitFor: aString.
 	^ rule
-		  name: rule name , '@OUT';
-		  atExit;
 		  action: 'exitTargetStack();';
 		  yourself
 ]
@@ -50,6 +44,58 @@ BTMRuleGenerator >> enterStackExitRuleFor: aString [
 BTMRuleGenerator >> helperName [
 
 	^ 'org.moosetechnology.vigil.VigilHelper'
+]
+
+{ #category : 'as yet unclassified' }
+BTMRuleGenerator >> lastMethodRuleFor: aString [
+
+	| rule |
+	rule := self ruleInitEntryFor: aString.
+	^ rule
+		  conditionInTarget;
+		  action: 'foundTargetStack($CLASS, $METHOD, $*);';
+		  yourself
+]
+
+{ #category : 'as yet unclassified' }
+BTMRuleGenerator >> midStackEntryRuleFor: aString [
+
+	| rule |
+	rule := self ruleInitEntryFor: aString.
+	^ rule conditionInTarget;
+		  action: 'enterTargetMethod($CLASS, $METHOD, $*);';
+		  yourself
+]
+
+{ #category : 'as yet unclassified' }
+BTMRuleGenerator >> midStackExitRuleFor: aString [
+
+	| rule |
+	rule := self ruleInitExitFor: aString.
+	^ rule
+		  conditionInTarget;
+		  action: 'exitTargetMethod();';
+		  yourself
+]
+
+{ #category : 'as yet unclassified' }
+BTMRuleGenerator >> ruleInitEntryFor: aString [
+
+	| rule |
+	rule := self ruleInitFor: aString.
+	^ rule
+		  atEntry;
+		  name: rule name , '@IN'
+]
+
+{ #category : 'as yet unclassified' }
+BTMRuleGenerator >> ruleInitExitFor: aString [
+
+	| rule |
+	rule := self ruleInitFor: aString.
+	^ rule
+		  atExit;
+		  name: rule name , '@OUT'
 ]
 
 { #category : 'as yet unclassified' }
@@ -67,4 +113,23 @@ BTMRuleGenerator >> ruleInitFor: aString [
 		  helper: self helperName;
 		  condition: 'true';
 		  yourself
+]
+
+{ #category : 'as yet unclassified' }
+BTMRuleGenerator >> rulesForStack: aCollection [
+
+	| rules entry mids last |
+	entry := aCollection last.
+	last := aCollection first.
+	mids := aCollection allButLast allButFirst.
+	rules := OrderedCollection new.
+	rules
+		add: (self enterStackEntryRuleFor: entry);
+		add: (self enterStackExitRuleFor: entry).
+	rules add: (self lastMethodRuleFor: entry).
+	mids do: [ :frame |
+			rules
+				add: (self midStackEntryRuleFor: frame);
+				add: (self midStackExitRuleFor: frame) ].
+	^ rules
 ]

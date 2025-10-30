@@ -74,6 +74,12 @@ BTMRule >> condition: aString [
 ]
 
 { #category : 'accessing' }
+BTMRule >> conditionInTarget [
+
+	self condition: 'inTarget()'
+]
+
+{ #category : 'accessing' }
 BTMRule >> helper [
 
 	^ helper
@@ -104,6 +110,11 @@ BTMRule >> instrumentedMethod [
 { #category : 'accessing' }
 BTMRule >> instrumentedMethod: aString [ 
 	instrumentedMethod := aString
+]
+
+{ #category : 'accessing' }
+BTMRule >> isConditionInTarget [
+	^ self condition = 'inTarget()'
 ]
 
 { #category : 'accessing' }
