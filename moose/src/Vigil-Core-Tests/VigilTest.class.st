@@ -24,8 +24,7 @@ VigilTest >> testDiscoverApplication [
 		entryPoint: 'com.example.App';
 		endChainMethod: 'endChain';
 		appDirectory: vigil vigilDirectory;
-		buildPath: '/java/build/classes/java/test';
-		jdkDirectory: 'java'.
+		buildPath: '/java/build/classes/java/test'.
 
 	vigil compileAgent.
 	self flag: #todo. "find a way to not compile at every test"

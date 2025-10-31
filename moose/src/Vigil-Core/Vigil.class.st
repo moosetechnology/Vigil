@@ -1,16 +1,26 @@
 "
 I'm the main class and entry point of Vigil.
 
+### Exemple of use
+```
+vigil
+		entryPoint: 'com.example.App'; ""Full name needed""
+		endChainMethod: 'endMethod'; ""Can use the signature of the method""
+		appDirectory: '/path/to/app/directory'; ""Directory to the app""
+		buildPath: '/path/to/compiled/classes'; ""Relative path from the app directory to the compiled classes folder""
+		jdkDirectory: '/path/to/jdk/contents/home/bin/java'. ""Directory to the jdk used in to launch the app""
+```
+
 ### Variables
 | Variable | description |
 |---|
-| `vigilDirectory` |  |
-| `appDirectory` | |
-| `jdkDirectory` |  |
-| `ruleGenerator` |  |
-| `endChainMethod` |  |
-| `buildPath` | |
-| `entryPoint` | |
+| `appDirectory` | The directory of the app to instrument (To define) |
+| `endChainMethod` | The last method of the call stack (To define) |
+| `buildPath` | relative path from the compiled classes (To define) |
+| `entryPoint` | The full name of the class launching the application (To define) |
+| `jdkDirectory` | The directory to the jdk used to launch the instrumented app (Initialize at 'java', using the $JAVA_HOME) |
+| `vigilDirectory` | The directory where vigil is (Automatically found) |
+| `ruleGenerator` | The generator of rule |
 "
 Class {
 	#name : 'Vigil',
@@ -101,7 +111,8 @@ Vigil >> initialize [
 	"Search for vigil repository to automatically launch java applications"
 	vigilDirectory := (IceRepository repositories detect: [ :r | r name = 'Vigil' ])
 		                  ifNotNil: [ :repo | repo repositoryDirectory pathString ]
-		                  ifNil: [ Error signal: 'Cannot find the Vigil repository' ]
+		                  ifNil: [ Error signal: 'Cannot find the Vigil repository' ].
+	jdkDirectory := 'java'
 ]
 
 { #category : 'compiling' }

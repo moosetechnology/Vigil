@@ -5,13 +5,13 @@ I represent a btm rule for a method instrumentation
 ### Variables
 | Variable | description |
 |---|
-| `btmName` | Name of the rule |
-| `btmClass` | The class where the rule should apply |
-| `btmMethod` | The method where the rule should apply |
-| `btmHelper` | The helper used for analysis |
-| `btmAt` | When does the rule activate |
-| `btmIf` | Condition of activation of the rule (can be a method)|
-| `btmDo` | What to do when the rule activate |
+| `name` | Name of the rule |
+| `instrumentedClass` | The class where the rule should apply |
+| `instrumentedMethod` | The method where the rule should apply |
+| `helper` | The helper used for analysis |
+| `at` | When does the rule activate |
+| `condition` | Condition of activation of the rule (can be a method)|
+| `action` | What to do when the rule activate |
 "
 Class {
 	#name : 'BTMRule',
