@@ -10,12 +10,16 @@ This builds the agent JAR with dependencies found at `./build/libs/vigil-agent-*
 ## Usage
 
 Add to JVM args:
-> -javaagent:***/path/to/vigil-agent.jar***=script:***/path/to/rule.btm***
+> -javaagent:***/path/to/Vigil/java/build/libs/vigil-agent.jar***=script:***/path/to/rule.btm***
 - `vigil-agent.jar` is the JAR built by this project
 - script points to one or more comma-separated rule files (.btm)
 
 Optionally define a file to output Vigil data:
 > -Dorg.moosetechnology.vigil.output=***/path/to/output/file***
+
+## Regenerate the App.ser
+Launch com.example.App and add to JVM args:
+> -javaagent:***/path/to/Vigil/java/build/libs/vigil-agent.jar***=script:***/path/to/Vigil/java/src/test/ressources/serialize.btm*** -Dorg.moosetechnology.vigil.output=***/path/to/Vigil/java/ser/App.ser***
 
 
 ## Rule Definition
