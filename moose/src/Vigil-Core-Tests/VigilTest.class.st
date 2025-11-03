@@ -33,6 +33,21 @@ VigilTest >> testCompileAgentIsSuccessful [
 ]
 
 { #category : 'tests' }
+VigilTest >> testDepedenciesInClasspath [
+
+	| dep1 dep2 result |
+	dep1 := 'dep1'.
+	dep2 := 'dep2'.
+	vigil
+		addDependencies: dep1;
+		addDependencies: dep2.
+
+	result := (vigil classpathOption splitOn: $:) allButFirst.
+	self assert: result first equals: dep1.
+	self assert: result second equals: dep2
+]
+
+{ #category : 'tests' }
 VigilTest >> testDiscoverApplication [
 
 	| result expected |

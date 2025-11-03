@@ -21,29 +21,49 @@ Class {
 		'ruleGenerator',
 		'endChainMethod',
 		'buildPath',
-		'entryPoint'
+		'entryPoint',
+		'dependencies',
+		'arguments'
 	],
 	#category : 'Vigil-Core',
 	#package : 'Vigil-Core'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
+Vigil >> addDependencies: aString [
+
+	dependencies add: aString
+]
+
+{ #category : 'accessing' }
 Vigil >> appDirectory: aString [ 
 	appDirectory := aString
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 Vigil >> buildPath: aString [ 
 	buildPath := aString
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'util' }
 Vigil >> classpathOption [
 
-	^ '-classpath "' , appDirectory , buildPath , '" ' , entryPoint
+	| stream |
+	stream := WriteStream on: ''.
+	stream
+		nextPutAll: '-classpath "';
+		nextPutAll: appDirectory;
+		nextPutAll: buildPath;
+		nextPutAll: '" ';
+		nextPutAll: entryPoint.
+	dependencies do: [ :dep |
+			stream
+				nextPut: $:;
+				nextPutAll: dep ].
+	^ stream contents
 ]
 
-{ #category : 'compiling' }
+{ #category : 'execution' }
 Vigil >> compileAgent [
 
 	| command |
@@ -55,7 +75,27 @@ Vigil >> compileAgent [
 	^ LibC resultOfCommand: command
 ]
 
-{ #category : 'compiling' }
+{ #category : 'util' }
+Vigil >> createCommandWith: aPath [
+
+	| command |
+	"Use the selected jdk"
+	command := jdkDirectory.
+	"Adding the agent"
+	command := command , ' ' , (self javaAgentOptionFor: aPath).
+	"Setting the classpath"
+	command := command , ' ' , self classpathOption.
+
+	^ command
+]
+
+{ #category : 'accessing' }
+Vigil >> dependencies: aString [
+
+	dependencies := aString
+]
+
+{ #category : 'execution' }
 Vigil >> discorverApplication [
 
 	| rule rulePath|
@@ -67,31 +107,23 @@ Vigil >> discorverApplication [
 	^ self executeApplicationWith: rulePath
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 Vigil >> endChainMethod: aString [ 
 	endChainMethod := aString
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 Vigil >> entryPoint: aString [ 
 	entryPoint := aString
 ]
 
-{ #category : 'compiling' }
+{ #category : 'execution' }
 Vigil >> executeApplicationWith: aPath [
-
-	| command |
-	"Use the selected jdk"
-	command := jdkDirectory.
-	"Adding the agent"
-	command := command , ' ' , (self javaAgentOptionFor: aPath).
-	"Setting the classpath"
-	command := command , ' ' , self classpathOption.
 	
-	^ LibC resultOfCommand: command
+	^ LibC resultOfCommand: (self createCommandWith: aPath)
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'execution' }
 Vigil >> extractStack [
 
 	| stack |
@@ -99,7 +131,7 @@ Vigil >> extractStack [
 	^ self extractStack: stack
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'execution' }
 Vigil >> extractStack: aCollection [
 
 	| rules rulesPath |
@@ -111,7 +143,7 @@ Vigil >> extractStack: aCollection [
 	^ (self executeApplicationWith: rulesPath) removeSuffix: String lf
 ]
 
-{ #category : 'compiling' }
+{ #category : 'util' }
 Vigil >> genreateRulePathFor: aRule [
 
 	^ FileReference newTempFilePrefix: 'rule' suffix: 'btm'
@@ -127,26 +159,28 @@ Vigil >> initialize [
 	vigilDirectory := (IceRepository repositories detect: [ :r | r name = 'Vigil' ])
 		                  ifNotNil: [ :repo | repo repositoryDirectory pathString ]
 		                  ifNil: [ Error signal: 'Cannot find the Vigil repository' ].
-	jdkDirectory := 'java'
+	jdkDirectory := 'java'.
+	dependencies := OrderedCollection new.
+	arguments := OrderedCollection new
 ]
 
-{ #category : 'compiling' }
+{ #category : 'util' }
 Vigil >> javaAgentOptionFor: aPath [
 
 	^ '-javaagent:"' , vigilDirectory , '/java/build/libs/vigil-agent-1.0.jar"=script:"' , aPath pathString, '"'
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 Vigil >> jdkDirectory: aString [ 
 	jdkDirectory := aString
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 Vigil >> vigilDirectory [
 	^ vigilDirectory
 ]
 
-{ #category : 'compiling' }
+{ #category : 'writing' }
 Vigil >> writeAll: aCollection in: aPathReference [
 
 	aPathReference asFileReference ensureCreateFile writeStreamDo: [ :stream | aCollection do: [ :rule | rule writeOn: stream ] ]
