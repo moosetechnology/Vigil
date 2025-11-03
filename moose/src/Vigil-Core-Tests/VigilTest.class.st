@@ -26,6 +26,17 @@ VigilTest >> setUp [
 ]
 
 { #category : 'tests' }
+VigilTest >> testArgumentOnCommand [
+
+	| command arg |
+	arg := 'arg'.
+	vigil addArgument: arg.
+	command := vigil createCommandWith: '' asFileReference.
+
+	self assert: (command splitOn: Character space) last equals: arg
+]
+
+{ #category : 'tests' }
 VigilTest >> testCompileAgentIsSuccessful [
 
 	self assert:

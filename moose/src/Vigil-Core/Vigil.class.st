@@ -30,6 +30,12 @@ Class {
 }
 
 { #category : 'accessing' }
+Vigil >> addArgument: aString [
+
+	arguments add: aString
+]
+
+{ #category : 'accessing' }
 Vigil >> addDependencies: aString [
 
 	dependencies add: aString
@@ -54,12 +60,13 @@ Vigil >> classpathOption [
 		nextPutAll: '-classpath "';
 		nextPutAll: appDirectory;
 		nextPutAll: buildPath;
-		nextPutAll: '" ';
-		nextPutAll: entryPoint.
+		nextPutAll: '"'.
 	dependencies do: [ :dep |
 			stream
 				nextPut: $:;
-				nextPutAll: dep ].
+				nextPut: $";
+				nextPutAll: dep;
+				nextPut: $" ].
 	^ stream contents
 ]
 
@@ -78,15 +85,29 @@ Vigil >> compileAgent [
 { #category : 'util' }
 Vigil >> createCommandWith: aPath [
 
-	| command |
+	| stream |
+	stream := WriteStream on: ''.
 	"Use the selected jdk"
-	command := jdkDirectory.
+	stream nextPutAll: jdkDirectory.
 	"Adding the agent"
-	command := command , ' ' , (self javaAgentOptionFor: aPath).
+	stream
+		space;
+		nextPutAll: (self javaAgentOptionFor: aPath).
 	"Setting the classpath"
-	command := command , ' ' , self classpathOption.
+	stream
+		space;
+		nextPutAll: self classpathOption.
+	"Adding application"
+	stream
+		space;
+		nextPutAll: entryPoint.
+	"Adding arguments"
+	arguments do: [ :arg |
+			stream
+				space;
+				nextPutAll: arg ].
 
-	^ command
+	^ stream contents
 ]
 
 { #category : 'accessing' }
