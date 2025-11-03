@@ -1,6 +1,6 @@
-RULE com.example.App.endChain()
+RULE com.example.App.endChain
 CLASS com.example.App
-METHOD endChain()
+METHOD endChain
 HELPER org.moosetechnology.vigil.VigilHelper
 AT ENTRY
 IF true
