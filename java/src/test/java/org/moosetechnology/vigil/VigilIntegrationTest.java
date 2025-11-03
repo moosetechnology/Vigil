@@ -91,12 +91,10 @@ public class VigilIntegrationTest {
 
     assertTrue(
         "Stack and first frame start tags missing:\n" + output,
-        output.contains("<stack><frame method=\"com.example.App.main(java.lang.String[])\">"));
+        output.contains("[{\"method\":\"com.example.App.main(java.lang.String[])\",\"values\":"));
 
-    assertTrue(
-        "Object ID (OID) missing in serialized stack:\n" + output, output.contains("oid=\"1\""));
+    assertTrue("Object ID missing in serialized stack:\n" + output, output.contains("\"@id\":1"));
 
-    assertTrue(
-        "Last frame and stack end tags missing:\n" + output, output.contains("</frame></stack>"));
+    assertTrue("Last frame and stack end tags missing:\n" + output, output.contains("}]"));
   }
 }

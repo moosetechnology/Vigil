@@ -6,7 +6,7 @@ plugins {
 
 ext {
     bytemanVersion = '3.0.20'
-    xstreamVersion = '1.4.19'
+    jacksonVersion = '2.12.7.2'
     junitVersion = '4.13.2'
 }
 
@@ -23,7 +23,7 @@ spotless {
 
 dependencies {
     implementation "org.jboss.byteman:byteman:$bytemanVersion"
-    implementation "com.thoughtworks.xstream:xstream:$xstreamVersion"
+    implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     testImplementation "junit:junit:$junitVersion"
 }
 
@@ -40,6 +40,8 @@ tasks.register('createAgentJar', Jar) {
     dependsOn classes
     archiveBaseName.set('vigil-agent')
     archiveVersion.set(project.version)
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     manifest {
         attributes(

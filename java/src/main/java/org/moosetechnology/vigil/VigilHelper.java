@@ -1,12 +1,12 @@
 package org.moosetechnology.vigil;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.ConverterLookup;
-import com.thoughtworks.xstream.core.TreeMarshaller;
-import com.thoughtworks.xstream.core.TreeMarshallingStrategy;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.xml.CompactWriter;
-import com.thoughtworks.xstream.mapper.Mapper;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+// import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -122,22 +122,36 @@ public class VigilHelper extends Helper {
   // ===== Utilities ==============================
   // ==============================================
 
-  /** Serializer. */
-  protected static final XStream XSTREAM;
+  protected static final ObjectMapper SERIALIZER;
 
   static {
-    XSTREAM = new XStream();
+    SERIALIZER = new ObjectMapper();
 
-    // Use custom marshalling context for Object ID injection
-    XSTREAM.setMarshallingStrategy(
-        new TreeMarshallingStrategy() {
-          @Override
-          protected TreeMarshaller createMarshallingContext(
-              HierarchicalStreamWriter writer, ConverterLookup converterLookup, Mapper mapper) {
-            return new ObjectIdMarshaller(writer, converterLookup, mapper);
-          }
-        });
+    SERIALIZER
+        .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+        .enable(MapperFeature.PROPAGATE_TRANSIENT_MARKER)
+        .addMixIn(Object.class, MixIn.class);
+
+    // SimpleModule oidModule = new SimpleModule();
+    // oidModule.setSerializerModifier(new OidInjectorModifier());
+    // SERIALIZER.registerModule(oidModule);
+
+    SERIALIZER.setVisibility(
+        SERIALIZER
+            .getVisibilityChecker()
+            .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+            .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+            .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
   }
+
+  /** Used to add Jackson annotations to a type without having to modify its source. */
+  @JsonIdentityInfo(generator = PersistentObjectIdGenerator.class, property = "@id")
+  @JsonTypeInfo(
+      use = JsonTypeInfo.Id.CLASS,
+      // TODO use JsonTypeInfo.As.WRAPPER_ARRAY when Famix-Value importer implements it
+      include = JsonTypeInfo.As.PROPERTY,
+      property = "@type")
+  private interface MixIn {}
 
   /** Contains the current stack data: serialized receiver and arguments of each frame. */
   protected static final Stack<String> STACK = new Stack<>();
@@ -178,12 +192,14 @@ public class VigilHelper extends Helper {
 
     try {
       Writer writer = new StringWriter();
-      CompactWriter xmlWriter = new CompactWriter(writer);
 
       // Each frame has its method signature as the "method" attribute
-      writer.append("<frame method=\"").append(signature).append("\">");
-      XSTREAM.marshal(receiverAndArguments, xmlWriter);
-      writer.append("</frame>");
+      writer
+          .append("{\"method\":\"")
+          .append(signature)
+          .append("\",\"values\":")
+          .append(SERIALIZER.writeValueAsString(receiverAndArguments))
+          .append("}");
 
       return writer.toString();
     } catch (Exception e) { // Submit an issue if this happens
@@ -199,12 +215,12 @@ public class VigilHelper extends Helper {
   protected String serializeStack(
       String className, String signature, Object[] receiverAndArguments) {
     debug("Serialize stack");
-    StringBuilder sb = new StringBuilder("<stack>");
+    StringBuilder sb = new StringBuilder("[");
     for (String frame : STACK) {
-      sb.append(frame);
+      sb.append(frame).append(',');
     }
     sb.append(serializeFrame(className, signature, receiverAndArguments));
-    sb.append("</stack>");
+    sb.append("]");
     return sb.toString();
   }
 
