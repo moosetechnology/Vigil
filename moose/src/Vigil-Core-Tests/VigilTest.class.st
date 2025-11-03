@@ -4,9 +4,26 @@ A VigilTest is a test class for testing the behavior of Vigil
 Class {
 	#name : 'VigilTest',
 	#superclass : 'TestCase',
+	#instVars : [
+		'vigil'
+	],
 	#category : 'Vigil-Core-Tests',
 	#package : 'Vigil-Core-Tests'
 }
+
+{ #category : 'running' }
+VigilTest >> setUp [
+
+	super setUp.
+
+	"Put here a common initialization logic for tests"
+	vigil := Vigil new.
+	vigil
+		entryPoint: 'com.example.App';
+		endChainMethod: 'endChain';
+		appDirectory: vigil vigilDirectory;
+		buildPath: '/java/build/classes/java/test'
+]
 
 { #category : 'tests' }
 VigilTest >> testCompileAgentIsSuccessful [
@@ -18,19 +35,8 @@ VigilTest >> testCompileAgentIsSuccessful [
 { #category : 'tests' }
 VigilTest >> testDiscoverApplication [
 
-	| vigil result expected |
-	vigil := Vigil new.
-	vigil
-		entryPoint: 'com.example.App';
-		endChainMethod: 'endChain';
-		appDirectory: vigil vigilDirectory;
-		buildPath: '/java/build/classes/java/test'.
-
-	vigil compileAgent.
-	self flag: #todo. "find a way to not compile at every test"
-	result := vigil discorverApplication.
-
-	result := (result splitOn: String lf) reject: [ :line | line isEmpty ].
+	| result expected |
+	result := (vigil discorverApplication splitOn: String lf) reject: [ :line | line isEmpty ].
 	expected := OrderedCollection new
 		            add: 'com.example.App.endChain';
 		            add: 'com.example.App.midChain';
@@ -38,6 +44,29 @@ VigilTest >> testDiscoverApplication [
 		            add: 'com.example.App.main';
 		            yourself.
 	self assertCollection: result hasSameElements: expected
+]
+
+{ #category : 'tests' }
+VigilTest >> testExtractStackWithArgument [
+
+	| result expected |
+	result := vigil extractStack: (OrderedCollection new
+			           add: 'com.example.App.endChain';
+			           add: 'com.example.App.midChain';
+			           add: 'com.example.App.beginChain';
+			           add: 'com.example.App.main';
+			           yourself).
+	expected := (vigil vigilDirectory , '/java/ser/App.ser') asFileReference contents.
+	self assert: result equals: expected
+]
+
+{ #category : 'tests' }
+VigilTest >> testExtractStackWithoutArgument [
+
+	| result expected |
+	result := vigil extractStack.
+	expected := (vigil vigilDirectory , '/java/ser/App.ser') asFileReference contents.
+	self assert: result equals: expected
 ]
 
 { #category : 'tests' }

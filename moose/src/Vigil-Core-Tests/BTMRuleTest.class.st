@@ -73,7 +73,7 @@ BTMRuleTest >> testWriteEndruleOn [
 	| stream |
 	stream := WriteStream with: ''.
 
-	self assert: ((rule writeEndruleOn: stream) contents copyUpTo: Character space) equals: 'ENDRULE'
+	self assert: ((rule writeEndruleOn: stream) contents copyUpTo: Character space) equals: 'ENDRULE' , String crlf
 ]
 
 { #category : 'tests' }

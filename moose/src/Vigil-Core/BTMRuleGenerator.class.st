@@ -4,11 +4,7 @@ I offer a simple API to generalize rule generation.
 
 ### Primary interface
 - discorverRuleFor:, create the rule for the discovering of an application
-- enterStackEntryRuleFor:, create a rule for the first method of a stack (At entry)
-- enterStackExitRuleFor:, create a rule for the first method of a stack (At exit)
-- midStackEntryRuleFor:, create a rule for a method mid stack (At entry)
-- midStackExitRuleFor:, create a rule for a method mid stack (At exit)
-- lastMethodRuleFor:, create a rule for the last method of the stack
+- ruleForStack:, create all the rule to instrument a stack
 "
 Class {
 	#name : 'BTMRuleGenerator',
@@ -131,7 +127,7 @@ BTMRuleGenerator >> rulesForStack: aCollection [
 	rules
 		add: (self enterStackEntryRuleFor: entry);
 		add: (self enterStackExitRuleFor: entry).
-	rules add: (self lastMethodRuleFor: entry).
+	rules add: (self lastMethodRuleFor: last).
 	mids do: [ :frame |
 			rules
 				add: (self midStackEntryRuleFor: frame);

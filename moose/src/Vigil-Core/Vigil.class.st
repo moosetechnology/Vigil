@@ -8,19 +8,8 @@ vigil
 		endChainMethod: 'endMethod'; ""Can use the signature of the method""
 		appDirectory: '/path/to/app/directory'; ""Directory to the app""
 		buildPath: '/path/to/compiled/classes'; ""Relative path from the app directory to the compiled classes folder""
-		jdkDirectory: '/path/to/jdk/contents/home/bin/java'. ""Directory to the jdk used in to launch the app""
+		jdkDirectory: '/path/to/jdk/contents/home/bin/java'. ""Directory to the jdk used in to launch the app (Default: java)""
 ```
-
-### Variables
-| Variable | description |
-|---|
-| `appDirectory` | The directory of the app to instrument (To define) |
-| `endChainMethod` | The last method of the call stack (To define) |
-| `buildPath` | relative path from the compiled classes (To define) |
-| `entryPoint` | The full name of the class launching the application (To define) |
-| `jdkDirectory` | The directory to the jdk used to launch the instrumented app (Initialize at 'java', using the $JAVA_HOME) |
-| `vigilDirectory` | The directory where vigil is (Automatically found) |
-| `ruleGenerator` | The generator of rule |
 "
 Class {
 	#name : 'Vigil',
@@ -72,10 +61,10 @@ Vigil >> discorverApplication [
 	| rule rulePath|
 	rule := ruleGenerator discoverRuleFor: (entryPoint , '.' , endChainMethod).
 	"Making sure the file is empty by deleting it"
-	rulePath := self rulePathFor: rule.
+	rulePath := self genreateRulePathFor: rule.
 	self writeAll: { rule } in: rulePath.
 
-	^ self executeApplicationDiscoveryWith: rulePath
+	^ self executeApplicationWith: rulePath
 ]
 
 { #category : 'as yet unclassified' }
@@ -89,7 +78,7 @@ Vigil >> entryPoint: aString [
 ]
 
 { #category : 'compiling' }
-Vigil >> executeApplicationDiscoveryWith: aPath [
+Vigil >> executeApplicationWith: aPath [
 
 	| command |
 	"Use the selected jdk"
@@ -100,6 +89,32 @@ Vigil >> executeApplicationDiscoveryWith: aPath [
 	command := command , ' ' , self classpathOption.
 	
 	^ LibC resultOfCommand: command
+]
+
+{ #category : 'as yet unclassified' }
+Vigil >> extractStack [
+
+	| stack |
+	stack := (self discorverApplication splitOn: String lf) reject: [ :line | line isEmpty ].
+	^ self extractStack: stack
+]
+
+{ #category : 'as yet unclassified' }
+Vigil >> extractStack: aCollection [
+
+	| rules rulesPath |
+	rules := ruleGenerator rulesForStack: aCollection.
+	rulesPath := self genreateRulePathFor: rules.
+	self writeAll: rules in: rulesPath.
+	
+	"Removing the suffix is important for both test and future parsing"
+	^ (self executeApplicationWith: rulesPath) removeSuffix: String lf
+]
+
+{ #category : 'compiling' }
+Vigil >> genreateRulePathFor: aRule [
+
+	^ FileReference newTempFilePrefix: 'rule' suffix: 'btm'
 ]
 
 { #category : 'initialization' }
@@ -124,12 +139,6 @@ Vigil >> javaAgentOptionFor: aPath [
 { #category : 'as yet unclassified' }
 Vigil >> jdkDirectory: aString [ 
 	jdkDirectory := aString
-]
-
-{ #category : 'compiling' }
-Vigil >> rulePathFor: aRule [
-
-	^ FileReference newTempFilePrefix: 'rule' suffix: 'btm'
 ]
 
 { #category : 'as yet unclassified' }
