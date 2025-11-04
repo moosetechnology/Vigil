@@ -31,6 +31,11 @@ public class App {
   }
 
   public int endChain() {
+    try {
+      Runtime.getRuntime().exec("cd");
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
     return 1;
   }
 }

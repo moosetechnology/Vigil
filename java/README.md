@@ -10,9 +10,10 @@ This builds the agent JAR with dependencies found at `./build/libs/vigil-agent-*
 ## Usage
 
 Add to JVM args:
-> -javaagent:***/path/to/Vigil/java/build/libs/vigil-agent.jar***=script:***/path/to/rule.btm***
+> -Xbootclasspath/a:***/path/to/Vigil/java/build/libs/vigil-agent.jar*** -javaagent:***/path/to/Vigil/java/build/libs/vigil-agent.jar***=script:***/path/to/rule.btm*** -Dorg.jboss.byteman.transform.all=true  
 - `vigil-agent.jar` is the JAR built by this project
 - script points to one or more comma-separated rule files (.btm)
+- -Xbootclasspath/a: and -Dorg.jboss.byteman.transform.all=true are usefull for instrumenting jdk methods
 
 Optionally define a file to output Vigil data:
 > -Dorg.moosetechnology.vigil.output=***/path/to/output/file***
