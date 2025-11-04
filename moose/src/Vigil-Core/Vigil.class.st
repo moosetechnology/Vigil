@@ -23,7 +23,8 @@ Class {
 		'buildPath',
 		'entryPoint',
 		'dependencies',
-		'arguments'
+		'arguments',
+		'outPutFile'
 	],
 	#category : 'Vigil-Core',
 	#package : 'Vigil-Core'
@@ -39,6 +40,12 @@ Vigil >> addArgument: aString [
 Vigil >> addDependencies: aString [
 
 	dependencies add: aString
+]
+
+{ #category : 'util' }
+Vigil >> agentDirectory [
+
+	^ '"' , vigilDirectory , '/java/build/libs/vigil-agent-1.0.jar"'
 ]
 
 { #category : 'accessing' }
@@ -89,19 +96,30 @@ Vigil >> createCommandWith: aPath [
 	stream := WriteStream on: ''.
 	"Use the selected jdk"
 	stream nextPutAll: jdkDirectory.
-	"Adding the agent"
+	"Making sure the bootstrap is instrumented"
+	stream
+		space;
+		nextPutAll: '-Xbootclasspath/a:';
+		nextPutAll: self agentDirectory.
 	stream
 		space;
 		nextPutAll: (self javaAgentOptionFor: aPath).
+	"Adding the agent"
 	"Allowing byteman to instrument all method"
 	stream
 		space;
 		nextPutAll: '-Dorg.jboss.byteman.transform.all=true'.
+	"Setting the outPutFile"
+	stream
+		space;
+		nextPutAll: '-Dorg.moosetechnology.vigil.output=';
+		nextPutAll: self outPutFile pathString.
 
 	"Setting the classpath"
 	stream
 		space;
 		nextPutAll: self classpathOption.
+
 	"Adding application"
 	stream
 		space;
@@ -111,7 +129,7 @@ Vigil >> createCommandWith: aPath [
 			stream
 				space;
 				nextPutAll: arg ].
-	
+
 	^ stream contents
 ]
 
@@ -134,7 +152,8 @@ Vigil >> discoverStack [
 ]
 
 { #category : 'accessing' }
-Vigil >> endChainMethod: aString [ 
+Vigil >> endChainMethod: aString [
+
 	endChainMethod := aString
 ]
 
@@ -146,14 +165,16 @@ Vigil >> entryPoint: aString [
 { #category : 'execution' }
 Vigil >> executeApplicationWith: aPath [
 	
-	^ Smalltalk os resultOfCommand: (self createCommandWith: aPath)
+	Smalltalk os runCommand: (self createCommandWith: aPath).
+	^ self outPutFile
 ]
 
 { #category : 'execution' }
 Vigil >> extractStack [
 
 	| stack |
-	stack := (self discoverStack splitOn: String lf) reject: [ :line | line isEmpty ].
+	stack := (self discoverStack contents splitOn: String lf) reject: [ :line | line isEmpty ].
+	
 	^ self extractStack: stack
 ]
 
@@ -166,13 +187,13 @@ Vigil >> extractStack: aCollection [
 	self writeAll: rules in: rulesPath.
 	
 	"Removing the suffix is important for both test and future parsing"
-	^ (self executeApplicationWith: rulesPath) removeSuffix: String lf
+	^ (self executeApplicationWith: rulesPath) contents removeSuffix: String lf
 ]
 
 { #category : 'util' }
 Vigil >> generateRulePathFor: aRule [
 
-	^ FileReference newTempFilePrefix: 'rule' suffix: 'btm'
+	^ FileReference newTempFilePrefix: 'rule' suffix: '.btm'
 ]
 
 { #category : 'initialization' }
@@ -187,20 +208,25 @@ Vigil >> initialize [
 		                  ifNil: [ Error signal: 'Cannot find the Vigil repository' ].
 	jdkDirectory := 'java'.
 	dependencies := OrderedCollection new.
-	arguments := OrderedCollection new
+	arguments := OrderedCollection new.
+	outPutFile := (FileReference newTempFilePrefix: 'output' suffix: '') ensureCreateFile 
 ]
 
 { #category : 'util' }
 Vigil >> javaAgentOptionFor: aPath [
-	|agent|
-	agent := '"', vigilDirectory , '/java/build/libs/vigil-agent-1.0.jar"'.
-	"Need to use the agentm both as the agentm and on boot, to be able to instrument jdk"
-	^ '-javaagent:' , agent , '=boot:', agent ,',script:"' , aPath pathString, '"'
+
+	^ '-javaagent:' , self agentDirectory , '=script:"' , aPath pathString , '"'
 ]
 
 { #category : 'accessing' }
 Vigil >> jdkDirectory: aString [ 
 	jdkDirectory := aString
+]
+
+{ #category : 'util' }
+Vigil >> outPutFile [
+
+	^ outPutFile
 ]
 
 { #category : 'accessing' }

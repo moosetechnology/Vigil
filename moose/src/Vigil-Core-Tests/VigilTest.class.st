@@ -62,7 +62,7 @@ VigilTest >> testDepedenciesInClasspath [
 VigilTest >> testDiscoverStack [
 
 	| result expected |
-	result := (vigil discoverStack splitOn: String lf) reject: [ :line | line isEmpty ].
+	result := (vigil discoverStack contents splitOn: String lf) reject: [ :line | line isEmpty ].
 	expected := OrderedCollection new
 		            add: 'com.example.App.endChain';
 		            add: 'com.example.App.midChain';
@@ -82,8 +82,8 @@ VigilTest >> testDiscoverStackInJDK [
 		jdkDirectory: (JavaVersionFinder new
 				 min: 7;
 				 max: 9;
-				 findJavaPath) pathString.
-	result := (vigil discoverStack splitOn: String lf) reject: [ :line | line isEmpty ].
+				 findJavaPath) pathString. 
+	result := (vigil discoverStack contents splitOn: String lf) reject: [ :line | line isEmpty ].
 	expected := OrderedCollection new
 		            add: 'com.example.App.endChain';
 		            add: 'com.example.App.midChain';
