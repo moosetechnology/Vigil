@@ -122,7 +122,7 @@ BTMRuleGenerator >> rulesForStack: aCollection [
 	| rules entry mids last |
 	entry := aCollection last.
 	last := aCollection first.
-	mids := aCollection allButLast allButFirst.
+	mids := aCollection allButLast allButFirst removeDuplicates.
 	rules := OrderedCollection new.
 	rules
 		add: (self enterStackEntryRuleFor: entry);

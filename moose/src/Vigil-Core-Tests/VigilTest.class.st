@@ -95,6 +95,22 @@ VigilTest >> testDiscoverStackInJDK [
 ]
 
 { #category : 'tests' }
+VigilTest >> testExtractStackResistToDuplicate [
+
+	| result expected |
+	result := vigil extractStack: (OrderedCollection new
+			           add: 'com.example.App.endChain';
+			           add: 'com.example.App.midChain';
+			           add: 'com.example.App.beginChain';
+			           add: 'com.example.App.beginChain';
+			           add: 'com.example.App.main';
+			           yourself).
+	expected := (vigil vigilDirectory , '/java/ser/App.ser') asFileReference contents.
+
+	self assert: result equals: expected
+]
+
+{ #category : 'tests' }
 VigilTest >> testExtractStackWithArgument [
 
 	| result expected |
