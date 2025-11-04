@@ -20,20 +20,9 @@ VigilTest >> setUp [
 	vigil := Vigil new.
 	vigil
 		entryPoint: 'com.example.App';
-		endChainMethod: 'endChain';
+		endChainMethod: 'com.example.App.endChain';
 		appDirectory: vigil vigilDirectory;
 		buildPath: '/java/build/classes/java/test'
-]
-
-{ #category : 'tests' }
-VigilTest >> testArgumentOnCommand [
-
-	| command arg |
-	arg := 'arg'.
-	vigil addArgument: arg.
-	command := vigil createCommandWith: '' asFileReference.
-
-	self assert: (command splitOn: Character space) last equals: arg
 ]
 
 { #category : 'tests' }
@@ -41,6 +30,17 @@ VigilTest >> testCompileAgentIsSuccessful [
 
 	self assert:
 		(Vigil new compileAgent includesSubstring: 'BUILD SUCCESSFUL')
+]
+
+{ #category : 'tests' }
+VigilTest >> testCorrectArgumentOnCommand [
+
+	| command arg |
+	arg := 'arg'.
+	vigil addArgument: arg.
+	command := vigil createCommandWith: '' asFileReference.
+
+	self assert: (command splitOn: Character space) last equals: arg
 ]
 
 { #category : 'tests' }
@@ -59,15 +59,37 @@ VigilTest >> testDepedenciesInClasspath [
 ]
 
 { #category : 'tests' }
-VigilTest >> testDiscoverApplication [
+VigilTest >> testDiscoverStack [
 
 	| result expected |
-	result := (vigil discorverApplication splitOn: String lf) reject: [ :line | line isEmpty ].
+	result := (vigil discoverStack splitOn: String lf) reject: [ :line | line isEmpty ].
 	expected := OrderedCollection new
 		            add: 'com.example.App.endChain';
 		            add: 'com.example.App.midChain';
 		            add: 'com.example.App.beginChain';
 		            add: 'com.example.App.main';
+		            yourself.
+	self assertCollection: result hasSameElements: expected
+]
+
+{ #category : 'tests' }
+VigilTest >> testDiscoverStackInJDK [
+
+	| result expected |
+	"Needing a version of java between 7 and 9 because byteman 3.0.20 cannot handle newer version"
+	vigil
+		endChainMethod: 'java.lang.Runtime.exec';
+		jdkDirectory: (JavaVersionFinder new
+				 min: 7;
+				 max: 9;
+				 findJavaPath) pathString.
+	result := (vigil discoverStack splitOn: String lf) reject: [ :line | line isEmpty ].
+	expected := OrderedCollection new
+		            add: 'com.example.App.endChain';
+		            add: 'com.example.App.midChain';
+		            add: 'com.example.App.beginChain';
+		            add: 'com.example.App.main';
+		            add: 'java.lang.Runtime.exec';
 		            yourself.
 	self assertCollection: result hasSameElements: expected
 ]
@@ -83,6 +105,7 @@ VigilTest >> testExtractStackWithArgument [
 			           add: 'com.example.App.main';
 			           yourself).
 	expected := (vigil vigilDirectory , '/java/ser/App.ser') asFileReference contents.
+	
 	self assert: result equals: expected
 ]
 

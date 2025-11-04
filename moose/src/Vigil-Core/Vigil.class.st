@@ -5,7 +5,7 @@ I'm the main class and entry point of Vigil.
 ```
 vigil
 		entryPoint: 'com.example.App'; ""Full name needed""
-		endChainMethod: 'endMethod'; ""Can use the signature of the method""
+		endChainMethod: 'com.example.App.endMethod'; ""Fully qualified method name""
 		appDirectory: '/path/to/app/directory'; ""Directory to the app""
 		buildPath: '/path/to/compiled/classes'; ""Relative path from the app directory to the compiled classes folder""
 		jdkDirectory: '/path/to/jdk/contents/home/bin/java'. ""Directory to the jdk used in to launch the app (Default: java)""
@@ -79,7 +79,7 @@ Vigil >> compileAgent [
 	"Compiling the agent"
 	command := command , ';./gradlew clean build'.
 
-	^ LibC resultOfCommand: command
+	^ Smalltalk os resultOfCommand: command
 ]
 
 { #category : 'util' }
@@ -93,6 +93,11 @@ Vigil >> createCommandWith: aPath [
 	stream
 		space;
 		nextPutAll: (self javaAgentOptionFor: aPath).
+	"Allowing byteman to instrument all method"
+	stream
+		space;
+		nextPutAll: '-Dorg.jboss.byteman.transform.all=true'.
+
 	"Setting the classpath"
 	stream
 		space;
@@ -106,7 +111,7 @@ Vigil >> createCommandWith: aPath [
 			stream
 				space;
 				nextPutAll: arg ].
-
+	
 	^ stream contents
 ]
 
@@ -117,12 +122,12 @@ Vigil >> dependencies: aString [
 ]
 
 { #category : 'execution' }
-Vigil >> discorverApplication [
+Vigil >> discoverStack [
 
-	| rule rulePath|
-	rule := ruleGenerator discoverRuleFor: (entryPoint , '.' , endChainMethod).
+	| rule rulePath |
+	rule := ruleGenerator discoverRuleFor: endChainMethod.
 	"Making sure the file is empty by deleting it"
-	rulePath := self genreateRulePathFor: rule.
+	rulePath := self generateRulePathFor: rule.
 	self writeAll: { rule } in: rulePath.
 
 	^ self executeApplicationWith: rulePath
@@ -141,14 +146,14 @@ Vigil >> entryPoint: aString [
 { #category : 'execution' }
 Vigil >> executeApplicationWith: aPath [
 	
-	^ LibC resultOfCommand: (self createCommandWith: aPath)
+	^ Smalltalk os resultOfCommand: (self createCommandWith: aPath)
 ]
 
 { #category : 'execution' }
 Vigil >> extractStack [
 
 	| stack |
-	stack := (self discorverApplication splitOn: String lf) reject: [ :line | line isEmpty ].
+	stack := (self discoverStack splitOn: String lf) reject: [ :line | line isEmpty ].
 	^ self extractStack: stack
 ]
 
@@ -157,7 +162,7 @@ Vigil >> extractStack: aCollection [
 
 	| rules rulesPath |
 	rules := ruleGenerator rulesForStack: aCollection.
-	rulesPath := self genreateRulePathFor: rules.
+	rulesPath := self generateRulePathFor: rules.
 	self writeAll: rules in: rulesPath.
 	
 	"Removing the suffix is important for both test and future parsing"
@@ -165,7 +170,7 @@ Vigil >> extractStack: aCollection [
 ]
 
 { #category : 'util' }
-Vigil >> genreateRulePathFor: aRule [
+Vigil >> generateRulePathFor: aRule [
 
 	^ FileReference newTempFilePrefix: 'rule' suffix: 'btm'
 ]
@@ -187,8 +192,10 @@ Vigil >> initialize [
 
 { #category : 'util' }
 Vigil >> javaAgentOptionFor: aPath [
-
-	^ '-javaagent:"' , vigilDirectory , '/java/build/libs/vigil-agent-1.0.jar"=script:"' , aPath pathString, '"'
+	|agent|
+	agent := '"', vigilDirectory , '/java/build/libs/vigil-agent-1.0.jar"'.
+	"Need to use the agentm both as the agentm and on boot, to be able to instrument jdk"
+	^ '-javaagent:' , agent , '=boot:', agent ,',script:"' , aPath pathString, '"'
 ]
 
 { #category : 'accessing' }
