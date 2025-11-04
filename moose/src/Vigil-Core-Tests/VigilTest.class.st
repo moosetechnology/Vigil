@@ -54,8 +54,8 @@ VigilTest >> testDepedenciesInClasspath [
 		addDependencies: dep2.
 
 	result := (vigil classpathOption splitOn: $:) allButFirst.
-	self assert: result first equals: dep1.
-	self assert: result second equals: dep2
+	self assert: result first equals: '"' , dep1 , '"'.
+	self assert: result second equals: '"' , dep2 , '"'
 ]
 
 { #category : 'tests' }
