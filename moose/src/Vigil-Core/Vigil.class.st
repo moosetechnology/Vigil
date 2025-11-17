@@ -236,6 +236,11 @@ Vigil >> vigilDirectory [
 
 { #category : 'writing' }
 Vigil >> writeAll: aCollection in: aPathReference [
+	"Here we add COMPILE because it reduce the reflection usage in Byteman, making it more robust"
 
-	aPathReference asFileReference ensureCreateFile writeStreamDo: [ :stream | aCollection do: [ :rule | rule writeOn: stream ] ]
+	aPathReference asFileReference ensureCreateFile writeStreamDo: [ :stream |
+			stream
+				nextPutAll: 'COMPILE';
+				nextPutAll: String crlf.
+			aCollection do: [ :rule | rule writeOn: stream ] ]
 ]

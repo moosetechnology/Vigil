@@ -95,6 +95,54 @@ VigilTest >> testDiscoverStackInJDK [
 ]
 
 { #category : 'tests' }
+VigilTest >> testDiscoverStackOnJdkMethods [
+
+	| result expected |
+	vigil
+		entryPoint: 'com.example.AppInvoke';
+		endChainMethod: 'java.lang.Runtime.exec';
+		jdkDirectory: (JavaVersionFinder new
+				 min: 7;
+				 max: 9;
+				 findJavaPath) pathString.
+
+	result := (vigil discoverStack contents splitOn: String lf) reject: [ :line | line isEmpty ].
+	expected := OrderedCollection new
+		            add: 'java.lang.Runtime.exec';
+		            add: 'jdk.internal.reflect.NativeMethodAccessorImpl.invoke0';
+		            add: 'jdk.internal.reflect.NativeMethodAccessorImpl.invoke';
+		            add: 'jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke';
+		            add: 'java.lang.reflect.Method.invoke';
+		            add: 'com.example.AppInvoke.main';
+		            yourself.
+	self assertCollection: result hasSameElements: expected
+]
+
+{ #category : 'tests' }
+VigilTest >> testExtractStackOnJdkMethods [
+
+	| result |
+	vigil
+		entryPoint: 'com.example.AppInvoke';
+		endChainMethod: 'java.lang.Runtime.exec';
+		jdkDirectory: (JavaVersionFinder new
+				 min: 7;
+				 max: 9;
+				 findJavaPath) pathString.
+
+	result := vigil extractStack: (OrderedCollection new
+			           add: 'java.lang.Runtime.exec';
+			           add: 'jdk.internal.reflect.NativeMethodAccessorImpl.invoke0';
+			           add: 'jdk.internal.reflect.NativeMethodAccessorImpl.invoke';
+			           add: 'jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke';
+			           add: 'java.lang.reflect.Method.invoke';
+			           add: 'com.example.AppInvoke.main';
+			           yourself).
+	"If the result is empty this mean that the instrumentation did not work"
+	self assert: result contents notEmpty
+]
+
+{ #category : 'tests' }
 VigilTest >> testExtractStackResistToDuplicate [
 
 	| result expected |
