@@ -1,0 +1,8 @@
+RULE Runtime.exec
+CLASS java.lang.Runtime
+METHOD exec
+HELPER org.moosetechnology.vigil.VigilHelper
+AT ENTRY
+IF true
+DO discoverTargetStack();
+ENDRULE
