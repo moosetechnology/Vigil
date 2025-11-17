@@ -130,10 +130,12 @@ BTMRule >> name: aString [
 
 { #category : 'accessing' }
 BTMRule >> writeActionOn: aStream [
+	"Here we use the method setTriggering(false); provided by byteman to make sure we don't fall in a recursive intrumentation"
 
 	action ifNil: [ Error signal: 'Action not defined' ].
 	^ aStream
 		  nextPutAll: 'DO ';
+		  nextPutAll: ' setTriggering(false); ';
 		  nextPutAll: action;
 		  crlf;
 		  yourself

@@ -24,7 +24,8 @@ Class {
 		'entryPoint',
 		'dependencies',
 		'arguments',
-		'outPutFile'
+		'outPutFile',
+		'stackFile'
 	],
 	#category : 'Vigil-Core',
 	#package : 'Vigil-Core'
