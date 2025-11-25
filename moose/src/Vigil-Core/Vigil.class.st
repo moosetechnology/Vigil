@@ -46,7 +46,7 @@ Vigil >> addDependencies: aString [
 { #category : 'util' }
 Vigil >> agentDirectory [
 
-	^ '"' , vigilDirectory , '/java/build/libs/vigil-agent-1.0.jar"'
+	^ vigilDirectory , '/java/build/libs/vigil-agent-1.0.jar'
 ]
 
 { #category : 'accessing' }
@@ -65,16 +65,13 @@ Vigil >> classpathOption [
 	| stream |
 	stream := WriteStream on: ''.
 	stream
-		nextPutAll: '-classpath "';
-		nextPutAll: appDirectory;
-		nextPutAll: buildPath;
-		nextPutAll: '"'.
+		nextPutAll: '-classpath ';
+		nextPutAll: (self quotes: appDirectory , buildPath).
+		
 	dependencies do: [ :dep |
 			stream
 				nextPut: $:;
-				nextPut: $";
-				nextPutAll: dep;
-				nextPut: $" ].
+				nextPutAll: (self quotes: dep) ].
 	^ stream contents
 ]
 
@@ -83,7 +80,7 @@ Vigil >> compileAgent [
 
 	| command |
 	"Going to the java directory"
-	command := 'cd "' , vigilDirectory , '/java"'.
+	command := 'cd ' , (self quotes: vigilDirectory , '/java').
 	"Compiling the agent"
 	command := command , ';./gradlew clean build'.
 
@@ -101,7 +98,7 @@ Vigil >> createCommandWith: aPath [
 	stream
 		space;
 		nextPutAll: '-Xbootclasspath/a:';
-		nextPutAll: self agentDirectory.
+		nextPutAll: (self quotes: self agentDirectory).
 	stream
 		space;
 		nextPutAll: (self javaAgentOptionFor: aPath).
@@ -188,6 +185,7 @@ Vigil >> extractStack: aCollection [
 	self writeAll: rules in: rulesPath.
 	
 	"Removing the suffix is important for both test and future parsing"
+	
 	^ (self executeApplicationWith: rulesPath) contents removeSuffix: String lf
 ]
 
@@ -216,7 +214,8 @@ Vigil >> initialize [
 { #category : 'util' }
 Vigil >> javaAgentOptionFor: aPath [
 
-	^ '-javaagent:' , self agentDirectory , '=script:"' , aPath pathString , '"'
+	^ '-javaagent:' , (self quotes: self agentDirectory) , '=script:'
+	  , (self quotes: aPath pathString)
 ]
 
 { #category : 'accessing' }
@@ -228,6 +227,12 @@ Vigil >> jdkDirectory: aString [
 Vigil >> outPutFile [
 
 	^ outPutFile
+]
+
+{ #category : 'accessing' }
+Vigil >> quotes: aString [
+
+	^ '"' , aString , '"'
 ]
 
 { #category : 'accessing' }

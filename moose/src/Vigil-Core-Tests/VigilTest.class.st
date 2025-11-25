@@ -26,6 +26,12 @@ VigilTest >> setUp [
 ]
 
 { #category : 'tests' }
+VigilTest >> testAgentDirectoryShouldBeAValidFileReference [
+
+	self assert: vigil agentDirectory asFileReference exists
+]
+
+{ #category : 'tests' }
 VigilTest >> testCompileAgentIsSuccessful [
 
 	self assert:
