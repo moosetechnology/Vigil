@@ -7,6 +7,17 @@ It allows executing and observing Java applications while instrumenting them aut
 
 This repository hosts both **Java** and **Moose** components.
 
+## Installation
+
+To install the project on your Pharo image, execute the following script: 
+
+```Smalltalk
+Metacello new
+  baseline: 'Vigil';
+  repository: 'github://moosetechnology/Vigil:mooseIntegration';
+  load
+```
+
 ## Project Structure
 
 - **`java/`** — Java agent project for automatic instrumentation using [Byteman](https://byteman.jboss.org/).
