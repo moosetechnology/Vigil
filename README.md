@@ -14,7 +14,7 @@ To install the project on your Pharo image, execute the following script:
 ```Smalltalk
 Metacello new
   baseline: 'Vigil';
-  repository: 'github://moosetechnology/Vigil:mooseIntegration';
+  repository: 'github://moosetechnology/Vigil:MooseIntegration';
   load
 ```
 
