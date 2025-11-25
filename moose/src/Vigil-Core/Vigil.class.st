@@ -24,7 +24,6 @@ Class {
 		'entryPoint',
 		'dependencies',
 		'arguments',
-		'outPutFile',
 		'stackFile'
 	],
 	#category : 'Vigil-Core',
@@ -88,7 +87,7 @@ Vigil >> compileAgent [
 ]
 
 { #category : 'util' }
-Vigil >> createCommandWith: aPath [
+Vigil >> createCommandWith: aPath output: anOutputPath [
 
 	| stream |
 	stream := WriteStream on: ''.
@@ -111,7 +110,7 @@ Vigil >> createCommandWith: aPath [
 	stream
 		space;
 		nextPutAll: '-Dorg.moosetechnology.vigil.output=';
-		nextPutAll: self outPutFile pathString.
+		nextPutAll: anOutputPath pathString.
 
 	"Setting the classpath"
 	stream
@@ -162,9 +161,12 @@ Vigil >> entryPoint: aString [
 
 { #category : 'execution' }
 Vigil >> executeApplicationWith: aPath [
-	
-	Smalltalk os runCommand: (self createCommandWith: aPath).
-	^ self outPutFile
+
+	| output |
+	output := self outputFile.
+	Smalltalk os runCommand:
+		(self createCommandWith: aPath output: output).
+	^ output 
 ]
 
 { #category : 'execution' }
@@ -207,8 +209,7 @@ Vigil >> initialize [
 		                  ifNil: [ Error signal: 'Cannot find the Vigil repository' ].
 	jdkDirectory := 'java'.
 	dependencies := OrderedCollection new.
-	arguments := OrderedCollection new.
-	outPutFile := (FileReference newTempFilePrefix: 'output' suffix: '') ensureCreateFile 
+	arguments := OrderedCollection new
 ]
 
 { #category : 'util' }
@@ -223,10 +224,11 @@ Vigil >> jdkDirectory: aString [
 	jdkDirectory := aString
 ]
 
-{ #category : 'util' }
-Vigil >> outPutFile [
+{ #category : 'accessing' }
+Vigil >> outputFile [
 
-	^ outPutFile
+	^ (FileReference newTempFilePrefix: 'output' suffix: '')
+		  ensureCreateFile
 ]
 
 { #category : 'accessing' }

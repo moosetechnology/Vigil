@@ -44,7 +44,7 @@ VigilTest >> testCorrectArgumentOnCommand [
 	| command arg |
 	arg := 'arg'.
 	vigil addArgument: arg.
-	command := vigil createCommandWith: '' asFileReference.
+	command := vigil createCommandWith: '' asFileReference output: vigil outputFile.
 
 	self assert: (command splitOn: Character space) last equals: arg
 ]
