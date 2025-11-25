@@ -1,6 +1,6 @@
 Class {
 	#name : 'BaselineOfVigil',
-	#superclass : 'Object',
+	#superclass : 'BaselineOf',
 	#category : 'BaselineOfVigil',
 	#package : 'BaselineOfVigil'
 }
