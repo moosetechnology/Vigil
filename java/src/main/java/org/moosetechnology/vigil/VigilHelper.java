@@ -3,19 +3,29 @@ package org.moosetechnology.vigil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.BeanDescription;
 // import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
+import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 import org.jboss.byteman.rule.Rule;
 import org.jboss.byteman.rule.helper.Helper;
+import org.moosetechnology.vigil.VigilHelper.UnserializableValue;
 
 /**
  * Implements tools to discover and serialize execution stacks.
@@ -123,6 +133,8 @@ public class VigilHelper extends Helper {
   // ==============================================
 
   protected static final ObjectMapper SERIALIZER;
+  protected static final ObjectWriter VALUE_WRITER;
+  protected static final ObjectWriter ERROR_WRITER;
 
   static {
     SERIALIZER = new ObjectMapper();
@@ -136,22 +148,73 @@ public class VigilHelper extends Helper {
     // oidModule.setSerializerModifier(new OidInjectorModifier());
     // SERIALIZER.registerModule(oidModule);
 
+    SERIALIZER.registerModule(
+        new SimpleModule()
+            .setSerializerModifier(
+                new BeanSerializerModifier() {
+                  @Override
+                  public List<BeanPropertyWriter> changeProperties(
+                      SerializationConfig config,
+                      BeanDescription beanDesc,
+                      List<BeanPropertyWriter> beanProperties) {
+                    List<BeanPropertyWriter> modifiedProperties = new ArrayList<>();
+                    for (BeanPropertyWriter bpw : beanProperties) {
+                      BeanPropertyWriter wrappedWriter =
+                          new BeanPropertyWriter(bpw) {
+                            @Override
+                            public void serializeAsField(
+                                Object bean, JsonGenerator gen, SerializerProvider prov)
+                                throws Exception {
+                              try {
+                                super.serializeAsField(bean, gen, prov);
+                              } catch (Exception e) {
+                                System.out.println(
+                                    String.format(
+                                        "ignoring %s for field '%s' of %s instance",
+                                        e.getClass().getName(),
+                                        this.getName(),
+                                        bean.getClass().getName()));
+                              }
+                            }
+                          };
+                      modifiedProperties.add(wrappedWriter);
+                    }
+                    return modifiedProperties;
+                  }
+                }));
+
     SERIALIZER.setVisibility(
         SERIALIZER
             .getVisibilityChecker()
             .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
             .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
             .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
+
+    VALUE_WRITER = SERIALIZER.writerFor(Object.class);
+    ERROR_WRITER = SERIALIZER.writerFor(UnserializableValue.class);
   }
 
   /** Used to add Jackson annotations to a type without having to modify its source. */
   @JsonIdentityInfo(generator = PersistentObjectIdGenerator.class, property = "@id")
   @JsonTypeInfo(
       use = JsonTypeInfo.Id.CLASS,
-      // TODO use JsonTypeInfo.As.WRAPPER_ARRAY when Famix-Value importer implements it
+      // TODO use JsonTypeInfo.As.WRAPPER_ARRAY when implemented in Famix-Value
       include = JsonTypeInfo.As.PROPERTY,
       property = "@type")
   private interface MixIn {}
+
+  /** Placeholder for values Jackson can't serialize normally. */
+  public static final class UnserializableValue {
+    public final String error;
+    public final String type;
+    public final String toString;
+
+    public UnserializableValue(String error, String type, String toString) {
+      this.error = error;
+      this.type = type;
+      this.toString = toString;
+    }
+  }
 
   /** Contains the current stack data: serialized receiver and arguments of each frame. */
   protected static final Stack<String> STACK = new Stack<>();
@@ -190,25 +253,55 @@ public class VigilHelper extends Helper {
     String signature =
         className + "." + signatureAndType.substring(0, signatureAndType.lastIndexOf(' '));
 
+    StringBuilder sb = new StringBuilder(256);
+    sb.append("{\"method\":\"").append(signature).append("\",\"values\":[");
+
+    for (int i = 0; i < receiverAndArguments.length; i++) {
+      if (i > 0) {
+        sb.append(',');
+      }
+      Object value = receiverAndArguments[i];
+
+      try {
+        // Normal path: let Jackson serialize this element
+        sb.append(VALUE_WRITER.writeValueAsString(value));
+      } catch (Exception ex) {
+        System.out.println(
+            String.format(
+                "Ignoring %s while serializing argument %d of %s: %s",
+                ex.getClass().getName(), i, signature, ex.getMessage()));
+
+        // Fallback: a small, always-serializable error object
+        UnserializableValue placeholder =
+            new UnserializableValue(
+                ex.getClass().getName() + ": " + ex.getMessage(),
+                (value != null ? value.getClass().getName() : "null"),
+                (value != null ? safeToString(value) : "null"));
+
+        try {
+          sb.append(ERROR_WRITER.writeValueAsString(placeholder));
+        } catch (Exception ex2) {
+          // Extremely defensive: even serializing the placeholder failed.
+          // Fall back to a simple JSON null to keep the array valid.
+          System.out.println(
+              String.format(
+                  "Also failed to serialize placeholder for argument %d of %s: %s",
+                  i, signature, ex2.getMessage()));
+          sb.append("null");
+        }
+      }
+    }
+
+    sb.append("]}");
+    return sb.toString();
+  }
+
+  // Avoid surprises in toString() throwing:
+  private static String safeToString(Object o) {
     try {
-      Writer writer = new StringWriter();
-
-      // Each frame has its method signature as the "method" attribute
-      writer
-          .append("{\"method\":\"")
-          .append(signature)
-          .append("\",\"values\":")
-          .append(SERIALIZER.writeValueAsString(receiverAndArguments))
-          .append("}");
-
-      return writer.toString();
-    } catch (Exception e) { // Submit an issue if this happens
-      return "Error serializing frame "
-          + signature
-          + ": "
-          + e.getClass().getSimpleName()
-          + " - "
-          + e.getMessage();
+      return String.valueOf(o);
+    } catch (Exception e) {
+      return "<toString() threw " + e.getClass().getSimpleName() + ">";
     }
   }
 
